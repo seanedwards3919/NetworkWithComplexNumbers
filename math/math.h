@@ -1,8 +1,14 @@
 #ifndef MATH_H
 #define MATH_H
 
-typedef RealNumber float; 
+#include<stdbool.h>
 
-#define add(a, b) 
+typedef float RealNumber; 
+typedef struct complexNumber {
+    RealNumber realPart;
+    RealNumber imaginaryPart;
+} ComplexNumber;
+
+#define gm_add(a, b)  
 
 #endif
