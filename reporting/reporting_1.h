@@ -20,5 +20,3 @@
  */
 
  #define REPORTING_1
- #define REPORTING_2
- #define REPORTING_3

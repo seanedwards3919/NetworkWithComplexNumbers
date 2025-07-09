@@ -5,6 +5,8 @@
 #include <stdbool.h>
 #include <stdio.h>
 
+#include "../reporting/reporting_3.h"
+
 /** The type with which the values are stored. Made modular like this so 
  */
 typedef long double valueType_apx;
@@ -30,9 +32,16 @@ typedef struct acnfl_numberObject {
     char vType;
     struct {
         valueType_apx realNumberValue_apx;
-        valueType_apx complexNumberValue_apx; // If nType is 'r', this is empty.
+        valueType_apx imaginaryNumberValue_apx; // If nType is 'r', this is empty.
     };
 } acnfl_NumberObject;
 
+
+ acnfl_NumberObject acnfl_add(acnfl_NumberObject a, acnfl_NumberObject b);
+acnfl_NumberObject acnfl_generateApx(long double real, long double imaginary);
+
+#ifdef REPORTING_3
+    void acnfl_errorReporting(acnfl_NumberObject *a) ;
+#endif
 
 #endif

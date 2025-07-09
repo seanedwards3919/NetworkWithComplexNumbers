@@ -3,7 +3,7 @@
  * ACNFL stands for: Automatically Compatable Numbertypes and Functions Library. 
  */
 #include "acnfl_math.h"
-#include "../reporting/reporting_1.h"
+#include "../reporting/reporting_3.h"
 
 #include <stdbool.h>
 #include <stdio.h>
@@ -62,16 +62,19 @@ inline acnfl_NumberObject acnfl_errorHandlingBinary (acnfl_NumberObject a , acnf
    return to_return ;
 }
 
+/**
+ * Check if a number marked as real has a complex component.
+ */
 void acnfl_checkComplexity(acnfl_NumberObject *number, bool *errorFlag) {
     if (number->vType == 'a') {
-        if ( ( number->nType == 'r') && (number->complexNumberValue_apx != 0) ) {
+        if ( ( number->nType == 'r') && (number->imaginaryNumberValue_apx != 0) ) {
             #ifdef REPORTING_2
                 printf("Something's gone wrong. "
                 "Number a : %La + i*%La is marked as \n" 
                 "a real number, but the complex number part"
                 "is not zero. The  value will be\n"
                 "marked as complex.", number->realNumberValue_apx , 
-                number->complexNumberValue_apx);
+                number->imaginaryNumberValue_apx);
             #endif
             number->nType = 'c';
         }
@@ -86,8 +89,11 @@ void acnfl_checkComplexity(acnfl_NumberObject *number, bool *errorFlag) {
 
 
 #ifdef REPORTING_3
-   inline void acnfl_errorReporting(acnfl_NumberObject *a) {
-        printf("Error detected with number at %p.\n", a);
+/**
+ * Dump memory for acnfl_NumberObject
+ */
+    void acnfl_errorReporting(acnfl_NumberObject *a) {
+        printf("Dumping memory of number at %p.\n", a);
         printf("Parameters: %c, %c", a->nType, a->vType);
         printf("Memory dump:. ");
         
@@ -127,7 +133,8 @@ void acnfl_checkComplexity(acnfl_NumberObject *number, bool *errorFlag) {
 void acnfl_unaryOperationCheck(acnfl_NumberObject *a, acnfl_NumberObject *returnValue, 
     bool *errorFlag) {
     // Check for error.
-    char err = acnfl_errorHandling(a);
+    char err = 't';//acnfl_errorHandling(a); 
+    ///TODO: Calling acnfl_errorHandling here was causing an error for some reason? What?
     // Return error results if there is a error
     if (err != 'c') {
         #ifdef REPORTING_3
@@ -173,6 +180,9 @@ void acnfl_binaryOperationCheck(acnfl_NumberObject *a, acnfl_NumberObject *b,
         }
     
 }
+/**
+ * Common code for binary function 
+ */
 acnfl_NumberObject acnfl_binaryOperationCommon(acnfl_NumberObject a, acnfl_NumberObject b,
             acnfl_NumberObject (*functionList[])(acnfl_NumberObject, acnfl_NumberObject, void*)) {
     acnfl_NumberObject returnValue;
@@ -221,8 +231,9 @@ acnfl_NumberObject acnfl_binaryOperationCommon(acnfl_NumberObject a, acnfl_Numbe
         #ifdef REPORTING_3
             printf("vType combination not defined! Returning error value!\n"
                     "a vType: %c .. b vType %c", a.vType, b.vType);
+                    
+            acnfl_errorReporting(&a); acnfl_errorReporting(&b);
         #endif
-        acnfl_errorReporting(&a); acnfl_errorReporting(&b);
         goto  errorHandling; 
     }
 
@@ -250,19 +261,48 @@ acnfl_NumberObject acnfl_binaryOperationCommon(acnfl_NumberObject a, acnfl_Numbe
 acnfl_NumberObject acnfl_binary_a_a_add(acnfl_NumberObject a, acnfl_NumberObject b, void *other) {
     return 
         (acnfl_NumberObject) {.vType = 'a', .nType = ((acnfl_NumberObject*) other)->nType,
-                .complexNumberValue_apx = (a.complexNumberValue_apx + b.complexNumberValue_apx),
+                .imaginaryNumberValue_apx = (a.imaginaryNumberValue_apx + b.imaginaryNumberValue_apx),
                 .realNumberValue_apx = (a.realNumberValue_apx + b.realNumberValue_apx)};
 }
 
 /**
- * Top-level addition function. This is what the user should call.
+* List of internal addition functions.`
  */
-
-
 acnfl_NumberObject (*acnfl_addFunctions[1])(acnfl_NumberObject, acnfl_NumberObject, void*) = 
         {acnfl_binary_a_a_add};
+
+/**
+ * Top-level addition function. 
+ * 
+ * THIS IS A USER FUNCTION.
+ */
 
  acnfl_NumberObject acnfl_add(acnfl_NumberObject a, acnfl_NumberObject b) {
     return acnfl_binaryOperationCommon(a, b, acnfl_addFunctions);
         
  }
+
+
+/****************************************************************************8
+ * DATA MANAGEMENT
+ *****************************************************************************/
+
+/*********
+ * Generate objects
+ *********/
+
+/**
+ * generates an acnfl_NumberObject using the approximate format
+ *
+ * THIS IS A USER FUNCTION.
+ */
+acnfl_NumberObject acnfl_generateApx(long double real, long double imaginary) {
+    acnfl_NumberObject toReturn = {.vType = 'a'};
+    if (imaginary != 0) toReturn.nType = 'c';
+    else toReturn.nType = 'r';
+
+    toReturn.imaginaryNumberValue_apx = imaginary;
+    toReturn.realNumberValue_apx = real;
+
+    return toReturn;
+}
