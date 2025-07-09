@@ -94,7 +94,7 @@ void acnfl_checkComplexity(acnfl_NumberObject *number, bool *errorFlag) {
  */
     void acnfl_errorReporting(acnfl_NumberObject *a) {
         printf("Dumping memory of number at %p.\n", a);
-        printf("Parameters: %c, %c", a->nType, a->vType);
+        printf("Parameters: nType %c, vType %c \n", a->nType, a->vType);
         printf("Memory dump:. ");
         
     short int counter = 0;
