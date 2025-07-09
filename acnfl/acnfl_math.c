@@ -100,10 +100,13 @@ void acnfl_checkComplexity(acnfl_NumberObject *number, bool *errorFlag) {
     short int counter = 0;
     short int length = sizeof(acnfl_NumberObject);
 
+    unsigned char* beginning = (unsigned char*) a;
+
+
     printf("\n     ");
     for ( int i = 0 ; i < length ; i++ ) {
         
-        printf("%2hhx ", *((char*)a)+i);
+        printf("%2hhx ", *(beginning+i));
         counter++;
         if (counter == 15) {
             counter = 0;

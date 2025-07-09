@@ -19,6 +19,7 @@
 
 #include "reporting/reporting_3.h"
 
+#include <stdlib.h>
 #include <stdio.h>
 #include "acnfl/acnfl_math.h"
 
@@ -33,13 +34,17 @@ int main() {
 
     printf(" ");
 
-    acnfl_NumberObject a = acnfl_generateApx(2.4, 0), 
-    b = acnfl_generateApx(0, 1);
+    acnfl_NumberObject *numbers = calloc(3, sizeof(acnfl_NumberObject));
+    numbers[0] = acnfl_generateApx(0,2);
+    numbers[1] = acnfl_generateApx(124, 0);
 
-    acnfl_errorReporting(&a);
-    acnfl_errorReporting(&b);
+    acnfl_errorReporting(numbers);
+    acnfl_errorReporting(numbers +1);
+    acnfl_errorReporting(numbers +2);
 
 
-    
+
+
+    free(numbers);
 
    }
