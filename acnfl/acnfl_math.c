@@ -106,7 +106,7 @@ void acnfl_checkComplexity(acnfl_NumberObject *number, bool *errorFlag) {
     printf("\n     ");
     for ( int i = 0 ; i < length ; i++ ) {
         
-        printf("%2hhx ", *(beginning+i));
+        printf("%02hhx ", *(beginning+i));
         counter++;
         if (counter == 15) {
             counter = 0;
@@ -136,7 +136,7 @@ void acnfl_checkComplexity(acnfl_NumberObject *number, bool *errorFlag) {
 void acnfl_unaryOperationCheck(acnfl_NumberObject *a, acnfl_NumberObject *returnValue, 
     bool *errorFlag) {
     // Check for error.
-    char err = 't';//acnfl_errorHandling(a); 
+    char err = 'c';//acnfl_errorHandling(a); 
     ///TODO: Calling acnfl_errorHandling here was causing an error for some reason? What?
     // Return error results if there is a error
     if (err != 'c') {
@@ -246,7 +246,7 @@ acnfl_NumberObject acnfl_binaryOperationCommon(acnfl_NumberObject a, acnfl_Numbe
 
     errorHandling:
     #ifdef REPORTING_3
-        printf("Error reported. Returning blank value!");
+        printf("Error reported. Returning blank value!\n");
         returnValue = (acnfl_NumberObject) {0};
         returnValue.nType = 'c';
         returnValue.nType = 'a';
@@ -257,6 +257,11 @@ acnfl_NumberObject acnfl_binaryOperationCommon(acnfl_NumberObject a, acnfl_Numbe
 /*********
  * Binary operations code and top-level functions 
  *********/
+
+
+ /**~~~~~~
+    ~  Addition/subtraction.
+    ~~~~~~*/
 
 /***
  * Add two approximate-format numbers together.
@@ -284,6 +289,102 @@ acnfl_NumberObject (*acnfl_addFunctions[1])(acnfl_NumberObject, acnfl_NumberObje
     return acnfl_binaryOperationCommon(a, b, acnfl_addFunctions);
         
  }
+
+/**
+ * Top level subtraction function.
+ *
+ * This is implemented by reversing b and simply calling the addition function.
+ * This is functionally a - b.
+ *
+ * THIS IS A USER FUNCTION
+ */
+acnfl_NumberObject ancfl_subtract(acnfl_NumberObject a, acnfl_NumberObject b) {
+    // Reverse value of b
+    if (b.vType == 'a') {
+        b.imaginaryNumberValue_apx = (-1) * b.imaginaryNumberValue_apx;
+        b.realNumberValue_apx = (-1) * b.realNumberValue_apx;
+    } else {
+        #ifdef REPORTING_3
+            printf("vType not supported. vType: %c", b.vType);
+            printf("Zeroing out values.");
+        #endif
+        char vType_temp = b.vType;
+        char nType_temp = b.nType; 
+        b = (acnfl_NumberObject) {0};
+        b.vType = vType_temp;
+        b.nType = nType_temp;
+    }
+
+    return acnfl_add(a, b);
+}
+
+
+ /**~~~~~~
+    ~  Multiplication
+    ~~~~~~*/
+    
+
+/**
+ * Multiply two approximate-format numbers together;
+ */
+ acnfl_NumberObject acnfl_binary_a_a_multiply(acnfl_NumberObject a, acnfl_NumberObject b, void *extra){
+        return 
+            (acnfl_NumberObject) {((acnfl_NumberObject*) extra )->nType, 'a', 
+                .realNumberValue_apx = ( (a.realNumberValue_apx * b.realNumberValue_apx)
+                                         - (a.imaginaryNumberValue_apx * b.imaginaryNumberValue_apx)),
+                .imaginaryNumberValue_apx = ( (a.realNumberValue_apx * b.realNumberValue_apx)
+                                         + (a.imaginaryNumberValue_apx * b.imaginaryNumberValue_apx)) };
+    }
+
+/**
+ * List of internal multiplication functions.
+ */
+
+ acnfl_NumberObject (*acnfl_multiplyFunctions[1])(acnfl_NumberObject, acnfl_NumberObject, void*) = 
+ {acnfl_binary_a_a_multiply};
+
+ /**
+  * Top level multiplication function.
+  * 
+  * THIS IS A USER FUNCTION 
+  */
+ 
+acnfl_NumberObject acnfl_multiply(acnfl_NumberObject a, acnfl_NumberObject b) {
+    return acnfl_binaryOperationCommon(a, b, acnfl_multiplyFunctions);
+}
+
+ /**~~~~~~
+    ~  Division
+    ~~~~~~*/
+/**
+ * Divides two approximate format numbers
+ */
+acnfl_NumberObject acnfl_binary_a_a_divide(acnfl_NumberObject a, acnfl_NumberObject b, void *extra) {
+    return (acnfl_NumberObject) {
+        ((acnfl_NumberObject *) extra)->nType, 'a',
+        .realNumberValue_apx = ( ( (a.realNumberValue_apx * b.realNumberValue_apx) + (a.imaginaryNumberValue_apx+b.imaginaryNumberValue_apx) ) 
+                                    / 
+                                 ( (b.realNumberValue_apx*b.realNumberValue_apx) + (b.imaginaryNumberValue_apx*b.imaginaryNumberValue_apx))),
+        .imaginaryNumberValue_apx = (( (a.imaginaryNumberValue_apx*b.realNumberValue_apx) - (a.realNumberValue_apx*b.imaginaryNumberValue_apx) ) 
+                                        / 
+                                     ( (b.realNumberValue_apx*b.realNumberValue_apx) + (b.imaginaryNumberValue_apx*b.imaginaryNumberValue_apx) ))
+    };
+}
+
+/** List of internal division functions. */
+acnfl_NumberObject (*acnfl_divideFunctions[1])(acnfl_NumberObject, acnfl_NumberObject, void*) = 
+{acnfl_binary_a_a_divide};
+
+/**
+ * Divides two nuumbers Top level division function . a/b
+ * 
+ * THIS IS A USER FUNCTION.
+ */
+acnfl_NumberObject acnfl_divide(acnfl_NumberObject a, acnfl_NumberObject b) {
+    /// TODO: Make sure this isn't dividing by zero.
+    return acnfl_binaryOperationCommon(a, b, acnfl_divideFunctions);
+}
+
 
 
 /****************************************************************************8
