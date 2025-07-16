@@ -54,9 +54,14 @@ int main() {
 */
     acnfl_NumberObject sum = acnfl_add(numbers[0], 
         acnfl_add(numbers[1], numbers[2]));
+    acnfl_NumberObject product =  acnfl_multiply(numbers[0], numbers[2]);
 
     printf("The sum of these three numbers " 
-    "is %Lf + %Lf*i", sum.realNumberValue_apx, sum.imaginaryNumberValue_apx);
+    "is %Lf + %Lf*i\n", sum.realNumberValue_apx, sum.imaginaryNumberValue_apx);
+    printf("The product of numbers 1 and 3 is %Lf + %Lf*i\n", 
+        product.realNumberValue_apx, product.imaginaryNumberValue_apx);
+    
+    printf("Something went wrong with the multiplication, me. Set up testing framework now.");
 
 
 
@@ -65,7 +70,10 @@ int main() {
 
     #ifdef REPORTING_1
         clock_t endingTime_wholeProgram = clock();
-        printf("const char *restrict format, ...")
+        printf("\n");
+        printf("This program took %Lf seconds and %ld ticks to run",
+             ((long double) (endingTime_wholeProgram-startingTime_wholeProgram))/CLOCKS_PER_SEC,
+            (endingTime_wholeProgram-startingTime_wholeProgram));
     #endif
 
    }
