@@ -43,7 +43,7 @@ int initialize_numbers_1st(){
 void tests_1st_addition(void) {
     acnfl_NumberObject add_result = acnfl_add(commonNumbers[0], commonNumbers[4]);
     acnfl_NumberObject originalResult = ((struct acnfl_numberObject) commonNumbers[4]);
-    add_result == originalResult;
+    //add_result == originalResult;
     /// TODO: Write function to check for equality;
 
 }

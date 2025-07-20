@@ -14,8 +14,9 @@
 
 /**
  * Checks a acnfl_NumberObject for an error and returns a boolean if true.
- * Only checks for error codes right now. If error detected, and not already flagged, then this funciton
- * modifies a and inserts an error code into the data.
+ * Only checks for error codes right now. In the future, if an error is detected,
+  *  and not already flagged, then this funciton
+ * modifies the passed value and inserts an error code into the passed value .
  */
 inline char acnfl_errorHandling(acnfl_NumberObject *a) {
     // If error detected
@@ -37,6 +38,11 @@ inline char acnfl_errorHandling(acnfl_NumberObject *a) {
 /**
  * Checks the acnfl_NumberObjects for errors in binary operations, and returns an 
  * appropriate acnfl_errorHandling object.
+ * 
+ * Checks for errors from a_error and b_error first, and then deterimines the correct 
+ * nType and vType to return if error detected 
+ * 
+ * TODO: I don't think this is used, lol 
  */
 inline acnfl_NumberObject acnfl_errorHandlingBinary (acnfl_NumberObject a , acnfl_NumberObject b,
         char a_error, char b_error ) {
@@ -64,6 +70,8 @@ inline acnfl_NumberObject acnfl_errorHandlingBinary (acnfl_NumberObject a , acnf
 
 /**
  * Check if a number marked as real has a complex component.
+ * If so, marks the number as complex. 
+ * If this fails, the errorFlag for number is set to true.
  */
 void acnfl_checkComplexity(acnfl_NumberObject *number, bool *errorFlag) {
     if (number->vType == 'a') {
@@ -80,7 +88,7 @@ void acnfl_checkComplexity(acnfl_NumberObject *number, bool *errorFlag) {
         }
     } else {
          #ifdef REPORTING_3
-            printf("vType not defined! Check impossible!"
+            printf("vType behavior not defined! Check impossible!"
                     "vType, %c\n", number->vType);
         #endif       
         (*errorFlag) = true;
@@ -90,7 +98,7 @@ void acnfl_checkComplexity(acnfl_NumberObject *number, bool *errorFlag) {
 
 #ifdef REPORTING_3
 /**
- * Dump memory for acnfl_NumberObject
+ * Dumps memory for acnfl_NumberObject.
  */
     void acnfl_errorReporting(acnfl_NumberObject *a) {
         printf("Dumping memory of number at %p.\n", a);
@@ -266,7 +274,7 @@ acnfl_NumberObject acnfl_binaryOperationCommon(acnfl_NumberObject a, acnfl_Numbe
 /***
  * Add two approximate-format numbers together.
  */
-acnfl_NumberObject acnfl_binary_a_a_add(acnfl_NumberObject a, acnfl_NumberObject b, void *other) {
+acnfl_NumberObject acnfl_binary_a_a_add(acnfl_NumberObject a, acnfl_NumberObject b, void *other) { /** TODO: clean *other up in the same way as the comparison functions?*/ 
     return 
         (acnfl_NumberObject) {.vType = 'a', .nType = ((acnfl_NumberObject*) other)->nType,
                 .imaginaryNumberValue_apx = (a.imaginaryNumberValue_apx + b.imaginaryNumberValue_apx),
@@ -385,7 +393,62 @@ acnfl_NumberObject acnfl_divide(acnfl_NumberObject a, acnfl_NumberObject b) {
     return acnfl_binaryOperationCommon(a, b, acnfl_divideFunctions);
 }
 
+/****************************************************************************8
+ * INEQUALITIES . EQUALITIES 
+ *****************************************************************************/
 
+/********* 
+ * General comparison function
+ *********/
+
+/**
+ * Information passed into acnfl_defaultComparison
+ */
+typedef struct {
+    char opType;
+} acnfl_defaultComparisonInformation;
+
+/**
+ * This is the default comparison function for acnfl_NumberObjects.
+ * This is written to return results in the same way comp is for bsearch;
+ * defined as <1 for a < b, 0 for a == b, and >1 
+ * for a > b
+ * 
+ * As there is no intuitive way to compare complex numbers, the exact
+ * opreation that will be performed is decided by the information passed through
+ * acnfl_defaultComparisonInformation.
+ * 
+ * if opType is 'd', the default will be used. This will give  the expected result
+ * for numbers without imaginary components (0 < 1, -1 < 0, etc) , and for complex 
+ * numbers it will only compare the real components.
+ *
+ * If opType is 'o', absolute value will be used. 
+ * 
+ */
+
+int acnfl_defaultComparison(acnfl_NumberObject a, acnfl_NumberObject b,
+    acnfl_defaultComparisonInformation parameter); 
+
+/**
+ * This is the top-level comparison function for acnfl_NumberObjects. 
+ * If NULL is passed into alternateFunction, then it will used the defined 
+ * alternative function. For the rest of this program, these will be expected
+ * to be defined in the same style as  bsearch; <1 for a < b, 0 for a == b, and >1 
+ * for a > b. This is what will be returned, as well.
+ *
+ * extraData can be user-defined and cast within alternateFunction. Within 
+ * acnfl_defaultComparison, it is cast to char.
+ */
+int acnfl_comparison(acnfl_NumberObject a, acnfl_NumberObject b, 
+        bool (*alternateFunction)(acnfl_NumberObject, acnfl_NumberObject, void*),
+        void* extraData) {
+            if (alternateFunction != NULL) {
+                return alternateFunction(a,b, extraData); 
+            }
+        return acnfl_defaultComparison(a, b, 
+            *((acnfl_defaultComparisonInformation*) extraData));
+        
+        };
 
 /****************************************************************************8
  * DATA MANAGEMENT
