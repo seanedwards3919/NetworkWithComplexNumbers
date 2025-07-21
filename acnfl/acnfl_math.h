@@ -46,6 +46,7 @@ acnfl_NumberObject acnfl_divide(acnfl_NumberObject a, acnfl_NumberObject b);
 
 #ifdef REPORTING_3
     void acnfl_errorReporting(acnfl_NumberObject *a) ;
+    //Testing?
 #endif
 
 #endif
