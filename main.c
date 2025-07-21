@@ -41,7 +41,7 @@ int main() {
 
     printf(" ");
 
-    printf("Numbers are %ld bytes wide\n", sizeof(valueType_apx));
+    printf("Numbers are %ld bytes wide\n", sizeof(acnfl_valueType_apx));
 
     acnfl_NumberObject *numbers = calloc(3, sizeof(acnfl_NumberObject));
     numbers[0] = acnfl_generateApx(0,2);

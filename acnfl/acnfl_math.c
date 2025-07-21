@@ -7,6 +7,7 @@
 
 #include <stdbool.h>
 #include <stdio.h>
+#include <math.h>
 
 /****************************************************************************8
  * RIGHTNESS CHECKING & ERROR HANDLING
@@ -418,16 +419,86 @@ typedef struct {
  * opreation that will be performed is decided by the information passed through
  * acnfl_defaultComparisonInformation.
  * 
- * if opType is 'd', the default will be used. This will give  the expected result
- * for numbers without imaginary components (0 < 1, -1 < 0, etc) , and for complex 
+ * if opType is 'd' or an undefined character,('default'), even for  complex 
  * numbers it will only compare the real components.
  *
- * If opType is 'o', absolute value will be used. 
+ * If opType is 'i', only the imaginary value of each number will be compared.
+ *
+ * If opType is 'a', absolute value will be used. For each 
+ * imaginary number, a + bi, we use the comparison value a^2 + b^2 
+ * (which measures how  
  * 
  */
 
 int acnfl_defaultComparison(acnfl_NumberObject a, acnfl_NumberObject b,
-    acnfl_defaultComparisonInformation parameter); 
+    acnfl_defaultComparisonInformation parameter) {
+        #ifdef NAN
+            int returnValue = NAN;
+        #elif 
+            int returnValue = 0;
+        #endif
+        
+        
+        if ( (a.vType == 'a') && (b.vType == 'a') ) {
+            
+        acnfl_valueType_apx  a_com, b_com;
+
+            if (parameter.opType == 'a') {
+            #ifdef REPORTING_1
+                printf("Passed parameter is %c\n"
+                        , parameter.opType);
+                printf("Proceed with 'o'");
+            #endif
+
+               a_com = ((a.imaginaryNumberValue_apx)*(a.imaginaryNumberValue_apx))+((a.realNumberValue_apx)*(a.realNumberValue_apx));
+                
+               b_com = ((b.imaginaryNumberValue_apx)*(b.imaginaryNumberValue_apx))+((b.realNumberValue_apx)*(b.realNumberValue_apx));
+                
+
+            } else if(parameter.opType == 'i') {
+                #ifdef REPORTING_1
+
+                printf("Passed parameter is %c\n"
+                        , parameter.opType);
+                printf("Proceed with 'i'");
+                #endif
+
+                a_com = a.imaginaryNumberValue_apx;
+                b_com = b.imaginaryNumberValue_apx;
+
+    
+            } else /*parameter.opType == 'd' or other*/ {
+               #ifdef REPORTING_2
+                printf("Passed parameter is %c\n"
+                        , parameter.opType);
+                printf("Proceed with 'o'");
+            #endif
+                
+                a_com = a.realNumberValue_apx; 
+                b_com = b.realNumberValue_apx;
+
+                
+            }
+
+            // Decide on return value
+            if      (a_com < b_com) returnValue = -1;
+            else if (a_com > b_com) returnValue = 1;
+            else    /*a_com==b_com*/returnValue = 0;
+
+        }
+
+        else {
+            #ifdef REPORTING_3
+                printf("vType combination not defined."
+                "a: %c, b: %c\n", a.vType, b.vType);
+                printf("Returning NAN, "
+                    "if possible.\n");
+            #endif
+        }
+
+        ending: 
+        return returnValue;
+    }; 
 
 /**
  * This is the top-level comparison function for acnfl_NumberObjects. 

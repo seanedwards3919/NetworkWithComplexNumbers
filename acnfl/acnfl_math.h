@@ -9,7 +9,7 @@
 
 /** The type with which the values are stored. Made modular like this so 
  */
-typedef long double valueType_apx;
+typedef long double acnfl_valueType_apx;
 
 /**
  * Possible values for nType (indicates the type of number used):
@@ -31,8 +31,8 @@ typedef struct acnfl_numberObject {
     char nType; 
     char vType;
     struct {
-        valueType_apx realNumberValue_apx;
-        valueType_apx imaginaryNumberValue_apx; // If nType is 'r', this is empty.
+        acnfl_valueType_apx realNumberValue_apx;
+        acnfl_valueType_apx imaginaryNumberValue_apx; // If nType is 'r', this is empty.
     };
 } acnfl_NumberObject;
 
