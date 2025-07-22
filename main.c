@@ -22,6 +22,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include "acnfl/acnfl_math.h"
+#include "tests/testHead.h"
 
 #ifdef REPORTING_1
     #include <time.h>
@@ -61,9 +62,10 @@ int main() {
     printf("The product of numbers 1 and 3 is %Lf + %Lf*i\n", 
         product.realNumberValue_apx, product.imaginaryNumberValue_apx);
     
-    printf("Something went wrong with the multiplication, me. Set up testing framework now.");
 
 
+    /** Run tests */
+    test_HeadProcess();
 
 
     free(numbers);

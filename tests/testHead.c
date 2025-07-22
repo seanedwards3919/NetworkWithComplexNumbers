@@ -2,12 +2,15 @@
 
     Uses CUnit to perform unit tests on the program.
 */
-#import "testHead.h"
+#include "testHead.h"
 #include <CUnit/CUError.h>
 #include <CUnit/TestDB.h>
-#import "../acnfl/acnfl_math.h"
+#include "../acnfl/acnfl_math.h"
 #include <CUnit/CUnit.h>
+#include <CUnit/TestDB.h>
 #include <math.h>
+#include <CUnit/Automated.h>
+#include <CUnit/Console.h>
 
 
 #define COMMON_NUMBERS_LENGTH 200
@@ -17,9 +20,9 @@ int position, length_1st;
 #define LOOP_NUMBERS_LENGTH 8
 
 /**
-    Initializes numbers used for testing.
+    Initializes numbers used for testing  numbers.
  */
-int initialize_numbers_1st(){
+int tests_initialize_numbers(){
     
     position = 0;
 
@@ -40,30 +43,43 @@ int initialize_numbers_1st(){
 
 }
 
-void tests_1st_addition(void) {
-    acnfl_NumberObject add_result = acnfl_add(commonNumbers[0], commonNumbers[4]);
-    acnfl_NumberObject originalResult = ((struct acnfl_numberObject) commonNumbers[4]);
-    //add_result == originalResult;
-    /// TODO: Write function to check for equality;
 
-}
 
+void test_appx_equality_inequality(void) {
+    char methods[] = {'d', 'i', 'a'};
+    CU_ASSERT_EQUAL(acnfl_comparison(commonNumbers[0], commonNumbers[0], 0, methods), 0)
+};
+
+CU_TestInfo tests_appx_db[] = {
+    {"Equality_inequality", test_appx_equality_inequality},
+    CU_TEST_INFO_NULL
+};
+
+CU_SuiteInfo suite_db[] = {
+    {"Approximate number tests", 0, 0, 0, 0, tests_appx_db},
+    CU_SUITE_INFO_NULL,
+};
 
 CU_ErrorCode test_HeadProcess(void) {
+    /*Initialize numbers*/
+    tests_initialize_numbers();
+
+    /*Initialize CUnit registry.*/
     if (CU_initialize_registry() != CUE_SUCCESS) {
         return CU_get_error();
     }
 
-    CU_pSuite firstSuite = CU_add_suite("operation_add_1", initialize_numbers_1st, 0);
-    if (CU_get_error() != CUE_SUCCESS) goto ending;
+    /* Register cunit suites */
+    CU_ErrorCode allSuites  =  CU_register_suites(suite_db);
+    if (allSuites != CUE_SUCCESS) return CU_get_error();
 
-    CU_add_test(firstSuite, "Addition Tests", tests_1st_addition);
-
-
+    CU_automated_run_tests();
+    //CU_console_run_tests();
+    
 
     ending:
     CU_ErrorCode toReturn = CU_get_error();
     CU_cleanup_registry();
     return toReturn;
 
-}
+}   

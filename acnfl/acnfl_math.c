@@ -430,12 +430,12 @@ typedef struct {
  * 
  */
 
-int acnfl_defaultComparison(acnfl_NumberObject a, acnfl_NumberObject b,
+float acnfl_defaultComparison(acnfl_NumberObject a, acnfl_NumberObject b,
     acnfl_defaultComparisonInformation parameter) {
         #ifdef NAN
-            int returnValue = NAN;
+            float returnValue = NAN;
         #elif 
-            int returnValue = 0;
+            float returnValue = 0;
         #endif
         
         
@@ -509,9 +509,11 @@ int acnfl_defaultComparison(acnfl_NumberObject a, acnfl_NumberObject b,
  *
  * extraData can be user-defined and cast within alternateFunction. Within 
  * acnfl_defaultComparison, it is cast to char.
+ *
+ * Returns NAN if error occurs
  */
-int acnfl_comparison(acnfl_NumberObject a, acnfl_NumberObject b, 
-        bool (*alternateFunction)(acnfl_NumberObject, acnfl_NumberObject, void*),
+float acnfl_comparison(acnfl_NumberObject a, acnfl_NumberObject b, 
+        float (*alternateFunction)(acnfl_NumberObject, acnfl_NumberObject, void*),
         void* extraData) {
             if (alternateFunction != NULL) {
                 return alternateFunction(a,b, extraData); 
