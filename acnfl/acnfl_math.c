@@ -406,14 +406,6 @@ acnfl_NumberObject acnfl_divide(acnfl_NumberObject a, acnfl_NumberObject b) {
 /********* 
  * General comparison function
  *********/
-
-/**
- * Information passed into acnfl_defaultComparison
- */
-typedef struct {
-    char opType;
-} acnfl_defaultComparisonInformation;
-
 /**
  * This is the default comparison function for acnfl_NumberObjects.
  * This is written to return results in the same way comp is for bsearch;
@@ -431,7 +423,7 @@ typedef struct {
  *
  * If opType is 'a', absolute value will be used. For each 
  * imaginary number, a + bi, we use the comparison value a^2 + b^2 
- * (which measures how  
+ * (which measures the distance from an "origin", 0 + 0i)  
  * 
  */
 

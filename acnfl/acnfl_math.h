@@ -36,6 +36,14 @@ typedef struct acnfl_numberObject {
     };
 } acnfl_NumberObject;
 
+/**
+ * Information passed into acnfl_defaultComparison
+ */
+typedef struct {
+    char opType;
+} acnfl_defaultComparisonInformation;
+
+
 
  acnfl_NumberObject acnfl_add(acnfl_NumberObject a, acnfl_NumberObject b);
 acnfl_NumberObject acnfl_generateApx(long double real, long double imaginary);
@@ -46,6 +54,9 @@ acnfl_NumberObject acnfl_divide(acnfl_NumberObject a, acnfl_NumberObject b);
 float acnfl_comparison(acnfl_NumberObject a, acnfl_NumberObject b, 
         float (*alternateFunction)(acnfl_NumberObject, acnfl_NumberObject, void*),
         void* extraData);
+float acnfl_defaultComparison 	( 	acnfl_NumberObject  	,
+		acnfl_NumberObject  	,
+		acnfl_defaultComparisonInformation  	) 		;
 
 
 #ifdef REPORTING_3
