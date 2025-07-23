@@ -267,6 +267,11 @@ acnfl_NumberObject acnfl_binaryOperationCommon(acnfl_NumberObject a, acnfl_Numbe
  * Binary operations code and top-level functions 
  *********/
 
+/** The total number of functions needed per operation. Best 
+  * to hard-code this in order to avoid any sort of discrepancies 
+  * (i.e. one operation having one less function than needed) at 
+  * compile-time. */
+#define NUMBEROF_FUNCTION_OPERATIONS 1
 
  /**~~~~~~
     ~  Addition/subtraction.
@@ -285,7 +290,7 @@ acnfl_NumberObject acnfl_binary_a_a_add(acnfl_NumberObject a, acnfl_NumberObject
 /**
 * List of internal addition functions.`
  */
-acnfl_NumberObject (*acnfl_addFunctions[1])(acnfl_NumberObject, acnfl_NumberObject, void*) = 
+acnfl_NumberObject (*acnfl_addFunctions[NUMBEROF_FUNCTION_OPERATIONS])(acnfl_NumberObject, acnfl_NumberObject, void*) = 
         {acnfl_binary_a_a_add};
 
 /**
@@ -349,7 +354,7 @@ acnfl_NumberObject ancfl_subtract(acnfl_NumberObject a, acnfl_NumberObject b) {
  * List of internal multiplication functions.
  */
 
- acnfl_NumberObject (*acnfl_multiplyFunctions[1])(acnfl_NumberObject, acnfl_NumberObject, void*) = 
+ acnfl_NumberObject (*acnfl_multiplyFunctions[NUMBEROF_FUNCTION_OPERATIONS])(acnfl_NumberObject, acnfl_NumberObject, void*) = 
  {acnfl_binary_a_a_multiply};
 
  /**
@@ -381,7 +386,7 @@ acnfl_NumberObject acnfl_binary_a_a_divide(acnfl_NumberObject a, acnfl_NumberObj
 }
 
 /** List of internal division functions. */
-acnfl_NumberObject (*acnfl_divideFunctions[1])(acnfl_NumberObject, acnfl_NumberObject, void*) = 
+acnfl_NumberObject (*acnfl_divideFunctions[NUMBEROF_FUNCTION_OPERATIONS])(acnfl_NumberObject, acnfl_NumberObject, void*) = 
 {acnfl_binary_a_a_divide};
 
 /**
