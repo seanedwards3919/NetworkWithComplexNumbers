@@ -47,8 +47,26 @@ int tests_initialize_numbers(){
 
 void test_appx_equality_inequality(void) {
     char methods[] = {'d', 'i', 'a'};
+    
+    // default method. 
     CU_ASSERT_EQUAL(acnfl_comparison(commonNumbers[0], commonNumbers[0], 0, methods), 0)
-};
+    CU_ASSERT_EQUAL(acnfl_comparison(commonNumbers[0], commonNumbers[3], 0, methods), 0);
+    CU_ASSERT_EQUAL(acnfl_comparison(commonNumbers[46], commonNumbers[25], 0, methods), 1)
+    CU_ASSERT_EQUAL(acnfl_comparison(commonNumbers[25], commonNumbers[46], 0, methods), -1)
+
+    //  imaginary method 
+    CU_ASSERT_EQUAL( acnfl_comparison(commonNumbers[2], commonNumbers[2], 0, (methods+1)) ,0);
+    CU_ASSERT_EQUAL(  acnfl_comparison(commonNumbers[37], commonNumbers[28], 0, (methods+1)) ,0);
+    CU_ASSERT_EQUAL(  acnfl_comparison(commonNumbers[50], commonNumbers[22], 0, (methods+1)) ,1);
+    CU_ASSERT_EQUAL(  acnfl_comparison(commonNumbers[48], commonNumbers[28], 0, (methods+1)) ,1);
+    CU_ASSERT_EQUAL(  acnfl_comparison(commonNumbers[28], commonNumbers[2], 0, (methods+1)),-1);
+    CU_ASSERT_EQUAL( acnfl_comparison(commonNumbers[0], commonNumbers[2], 0, (methods+1)), -1);
+
+    // Absolute method
+    CU_ASSERT_EQUAL( acnfl_comparison(commonNumbers[3], commonNumbers[24], 0, (methods+1)) ,0);
+    CU_ASSERT_EQUAL(  acnfl_comparison(commonNumbers[29], commonNumbers[37], 0, (methods+1)) ,0);
+
+}
 
 CU_TestInfo tests_appx_db[] = {
     {"Equality_inequality", test_appx_equality_inequality},
