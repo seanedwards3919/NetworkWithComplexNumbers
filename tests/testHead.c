@@ -7,13 +7,14 @@
 #include <CUnit/TestDB.h>
 #include "../acnfl/acnfl_math.h"
 #include <CUnit/CUnit.h>
-#include <CUnit/TestDB.h>
 #include <math.h>
 #include <CUnit/Automated.h>
 #include <CUnit/Console.h>
 
 
 #define COMMON_NUMBERS_LENGTH 200
+/**Okay, so don't touch this, but we're not using this to generate tests 
+  *any more. Just unnececarily clunky. */
 acnfl_NumberObject commonNumbers[COMMON_NUMBERS_LENGTH];
 int position, length_1st;
 
@@ -22,6 +23,8 @@ int position, length_1st;
 /**
     Initializes numbers used for testing  numbers.
  */
+
+
 int tests_initialize_numbers(){
     
     position = 0;
@@ -68,8 +71,58 @@ void test_appx_equality_inequality(void) {
 
 }
 
+void test_appx_addition(void){
+    acnfl_NumberObject a = acnfl_generateApx(NAN, 0),
+                       b = acnfl_generateApx(5, 5),
+                       c = acnfl_generateApx(10, 10),
+                       d = acnfl_generateApx(-5, 5),
+                       e = acnfl_generateApx(1.56, 0),
+                       f = acnfl_generateApx(0, 10),
+                       g = acnfl_generateApx(5, 15);
+    
+    CU_ASSERT_EQUAL(acnfl_defaultComparison(b, b, (acnfl_defaultComparisonInformation) {.opType='d'}), 0);
+    CU_ASSERT_EQUAL(
+        acnfl_defaultComparison(
+            acnfl_add(b, b), 
+            c, 
+            (acnfl_defaultComparisonInformation) {.opType='a'}), 
+        0)
+    CU_ASSERT_EQUAL(  
+        acnfl_defaultComparison(
+            acnfl_add(
+                b, 
+                d), 
+            ancfl_subtract(
+                g, b), 
+            (acnfl_defaultComparisonInformation) {.opType='a'}), 
+        0);
+    CU_ASSERT_EQUAL(
+        acnfl_defaultComparison(
+            acnfl_add(
+                e, f),  
+            acnfl_generateApx(1.56, 10), 
+            (acnfl_defaultComparisonInformation) {.opType='a'}), 
+        0);
+
+}
+
+
+void test_appx_multiplication(void) {
+    
+    ACNFL_testing_equal( 
+        acnfl_multiply(gApx(1.2,0), gApx(0, 1.4)), 
+        gApx(0, 1.68));
+
+    ACNFL_testing_equal( 
+        acnfl_multiply(gApx(1.2,1), gApx(0, 1.4)), 
+        gApx(-1.4, 1.68));
+}
+
+
 CU_TestInfo tests_appx_db[] = {
     {"Equality_inequality", test_appx_equality_inequality},
+    {"Addition_subtraction", test_appx_addition},
+    {"Multiplication", test_appx_multiplication},
     CU_TEST_INFO_NULL
 };
 
