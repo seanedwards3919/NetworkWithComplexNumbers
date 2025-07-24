@@ -1,5 +1,5 @@
 
-/** @file math.
+/** @file acnfl_math.c
  * ACNFL stands for: Automatically Compatable Numbertypes and Functions Library. 
  */
 #include "acnfl_math.h"
@@ -416,15 +416,7 @@ acnfl_NumberObject acnfl_divide(acnfl_NumberObject a, acnfl_NumberObject b) {
  * opreation that will be performed is decided by the information passed through
  * acnfl_defaultComparisonInformation.
  * 
- * if opType is 'd' or an undefined character,('default'), even for  complex 
- * numbers it will only compare the real components.
- *
- * If opType is 'i', only the imaginary value of each number will be compared.
- *
- * If opType is 'a', absolute value will be used. For each 
- * imaginary number, a + bi, we use the comparison value a^2 + b^2 
- * (which measures the distance from an "origin", 0 + 0i)  
- * 
+* 
  */
 
 float acnfl_defaultComparison(acnfl_NumberObject a, acnfl_NumberObject b,

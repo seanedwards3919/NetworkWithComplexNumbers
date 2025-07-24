@@ -1,4 +1,11 @@
 
+/** @file acnfl_math.c
+ * ACNFL stands for: Automatically Compatable Numbertypes and Functions Library. 
+ * 
+ * This is the set of functions and datatypes that allows imaginary and real numbers
+ * to work in tandem during this program.
+ * It is also designed to be potentiallye extensible in the future.
+ */
 #ifndef acnfl_MATH_H
 #define acnfl_MATH_H
 
@@ -7,11 +14,15 @@
 
 #include "../reporting/reporting_3.h"
 
-/** The type with which the values are stored. Made modular like this so 
+/** The type with which the values are stored. Made modular like this so it may be changed in future.
  */
 typedef long double acnfl_valueType_apx;
 
 /**
+ * The general number data type for acnfl
+ * 
+ * @param nType Gives the type of the number in a mathematical sense. 
+ *
  * Possible values for nType (indicates the type of number used):
  *
  * 'r' - Indicates that acnfl_NumberObject holds a real number. If this is the case, then 
@@ -22,8 +33,15 @@ typedef long double acnfl_valueType_apx;
  * 
  * 'e' - Indicates there is an error with the acnfl_NumberObject's number format.
  *
+ * @param vType vType determines the 
+ *  format used for storing numbers in the struct 
  * The only current valid values for vType (indicates format for number) is 'a' (approximate) or 'e' 
  * (indicates an error with the acnfl_NumberObject's value sorage).
+ * 
+ * 'a' is simply a long double.
+ *
+ * @param realNumberValue_apx Real value of the number if approx data type is used.
+ * @param imaginaryNumberValue_apx imaginary value of the number if approximate data type is used.
  * 
  * TODO: Determine type priority if there is more than one vType in play.
  */
@@ -37,10 +55,29 @@ typedef struct acnfl_numberObject {
 } acnfl_NumberObject;
 
 /**
- * Information passed into acnfl_defaultComparison
+ * Information passed into acnfl_defaultComparison.
+ * 
+ * @param opType Determines the type of operation performed to determine equality.
+ * 
+ * if opType is 'd' or an undefined character,('default'), even for  complex 
+ * numbers it will only compare the real components.
+ *
+ * If opType is 'i', only the imaginary value of each number will be compared.
+ *
+ * If opType is 'a', absolute value will be used. For each 
+ * imaginary number, a + bi, we use the comparison value a^2 + b^2 
+ * (which measures the distance from an "origin", 0 + 0i)  
+ *
+ * @param leeway_apx Tells defaultComparison whether or not to check for near-equality
+ * when using .
+ * 
+ * @param epsilon_apx If leeway is true, this is the epsilon value that determines our 
+ * leeway for near-equality when leeway_apx is true.
  */
 typedef struct {
     char opType;
+    bool leeway_apx;
+    acnfl_valueType_apx epsilon_apx;
 } acnfl_defaultComparisonInformation;
 
 
