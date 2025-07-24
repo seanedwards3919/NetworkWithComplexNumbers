@@ -216,7 +216,7 @@ acnfl_NumberObject acnfl_binaryOperationCommon(acnfl_NumberObject a, acnfl_Numbe
             printf("vType is 'a', 'a' : %c, %c", a.vType, b.vType);
         #endif
         returnValue.vType = 'a';
-        acnfl_NumberObject result = (*functionList[0])(a,b,&result);
+        acnfl_NumberObject result = (*functionList[0])(a,b,&returnValue);
          
         /// TODO: Perform sanity checks here. 
         if (returnValue.vType == result.vType) {
