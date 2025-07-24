@@ -346,8 +346,8 @@ acnfl_NumberObject ancfl_subtract(acnfl_NumberObject a, acnfl_NumberObject b) {
             (acnfl_NumberObject) {((acnfl_NumberObject*) extra )->nType, 'a', 
                 .realNumberValue_apx = ( (a.realNumberValue_apx * b.realNumberValue_apx)
                                          - (a.imaginaryNumberValue_apx * b.imaginaryNumberValue_apx)),
-                .imaginaryNumberValue_apx = ( (a.realNumberValue_apx * b.realNumberValue_apx)
-                                         + (a.imaginaryNumberValue_apx * b.imaginaryNumberValue_apx)) };
+                .imaginaryNumberValue_apx = ( (a.realNumberValue_apx * b.imaginaryNumberValue_apx)
+                                         + (a.imaginaryNumberValue_apx * b.realNumberValue_apx)) };
     }
 
 /**
