@@ -469,10 +469,26 @@ float acnfl_defaultComparison(acnfl_NumberObject a, acnfl_NumberObject b,
                 
             }
 
-            // Decide on return value
-            if      (a_com < b_com) returnValue = -1;
-            else if (a_com > b_com) returnValue = 1;
-            else    /*a_com==b_com*/returnValue = 0;
+            // Check for a == b 
+            if (parameter.leeway_apx) {
+                // Check for exact equality.
+                if (a_com == b_com)  return 0;
+                acnfl_valueType_apx diff  = fabsl(a_com-b_com),
+                                    den  = fabsl(a_com) + fabsl(b_com),
+                                    comparison = diff/den;
+                if (comparison < parameter.epsilon_apx)  return 0; 
+                
+            }
+            else {
+                // Check for exact equality
+                if (a_com == b_com) return 0;
+            }
+
+            // Check for a > b
+            if   (a_com > b_com) return 1;
+
+            // Return a < b
+            else /*a_com < b_com*/ return -1;
 
         }
 
