@@ -281,10 +281,16 @@ acnfl_NumberObject acnfl_binaryOperationCommon(acnfl_NumberObject a, acnfl_Numbe
  * Add two approximate-format numbers together.
  */
 acnfl_NumberObject acnfl_binary_a_a_add(acnfl_NumberObject a, acnfl_NumberObject b, void *other) { /** TODO: clean *other up in the same way as the comparison functions?*/ 
-    return 
-        (acnfl_NumberObject) {.vType = 'a', .nType = ((acnfl_NumberObject*) other)->nType,
+    acnfl_NumberObject toReturn;
+    toReturn.vType = 'a';
+    toReturn.nType = ((acnfl_NumberObject*) other)->nType;
+    toReturn.imaginaryNumberValue_apx = (a.imaginaryNumberValue_apx + b.imaginaryNumberValue_apx);
+    toReturn.realNumberValue_apx = (a.realNumberValue_apx + b.realNumberValue_apx);
+
+    return toReturn;
+    /*        (acnfl_NumberObject) {.vType = 'a', .nType = ((acnfl_NumberObject*) other)->nType,
                 .imaginaryNumberValue_apx = (a.imaginaryNumberValue_apx + b.imaginaryNumberValue_apx),
-                .realNumberValue_apx = (a.realNumberValue_apx + b.realNumberValue_apx)};
+                .realNumberValue_apx = (a.realNumberValue_apx + b.realNumberValue_apx)};*/
 }
 
 /**
@@ -342,12 +348,21 @@ acnfl_NumberObject ancfl_subtract(acnfl_NumberObject a, acnfl_NumberObject b) {
  * Multiply two approximate-format numbers together;
  */
  acnfl_NumberObject acnfl_binary_a_a_multiply(acnfl_NumberObject a, acnfl_NumberObject b, void *extra){
-        return 
-            (acnfl_NumberObject) {((acnfl_NumberObject*) extra )->nType, 'a', 
+        acnfl_NumberObject toReturn;
+        toReturn.nType = ((acnfl_NumberObject*) extra )->nType;
+        toReturn.vType = 'a';
+        toReturn.realNumberValue_apx = ( (a.realNumberValue_apx * b.realNumberValue_apx)
+                                         - (a.imaginaryNumberValue_apx * b.imaginaryNumberValue_apx));
+        toReturn.imaginaryNumberValue_apx = ( (a.realNumberValue_apx * b.imaginaryNumberValue_apx)
+                                         + (a.imaginaryNumberValue_apx * b.realNumberValue_apx));
+
+
+        return toReturn;
+            /*(acnfl_NumberObject) {((acnfl_NumberObject*) extra )->nType, 'a', 
                 .realNumberValue_apx = ( (a.realNumberValue_apx * b.realNumberValue_apx)
                                          - (a.imaginaryNumberValue_apx * b.imaginaryNumberValue_apx)),
                 .imaginaryNumberValue_apx = ( (a.realNumberValue_apx * b.imaginaryNumberValue_apx)
-                                         + (a.imaginaryNumberValue_apx * b.realNumberValue_apx)) };
+                                         + (a.imaginaryNumberValue_apx * b.realNumberValue_apx)) };*/
     }
 
 /**
@@ -391,6 +406,8 @@ acnfl_NumberObject (*acnfl_divideFunctions[NUMBEROF_FUNCTION_OPERATIONS])(acnfl_
 
 /**
  * Divides two nuumbers Top level division function . a/b
+ * Note that this does NOT CHECK whether b is non-zero. Like
+ * with the C operation itself, you'll have to check that yourself.
  * 
  * THIS IS A USER FUNCTION.
  */
