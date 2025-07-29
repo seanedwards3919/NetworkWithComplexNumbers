@@ -386,10 +386,22 @@ acnfl_NumberObject acnfl_multiply(acnfl_NumberObject a, acnfl_NumberObject b) {
     ~  Division
     ~~~~~~*/
 /**
- * Divides two approximate format numbers
+ * Divides two approximate format numbers.
  */
 acnfl_NumberObject acnfl_binary_a_a_divide(acnfl_NumberObject a, acnfl_NumberObject b, void *extra) {
-    return (acnfl_NumberObject) {
+    acnfl_NumberObject toReturn;
+    toReturn.nType = ((acnfl_NumberObject *) extra)->nType;
+    toReturn.vType = 'a';
+    toReturn.realNumberValue_apx = ( 
+                                ( (a.realNumberValue_apx * b.realNumberValue_apx) + (a.imaginaryNumberValue_apx*b.imaginaryNumberValue_apx) ) 
+                                    / 
+                                 ( (b.realNumberValue_apx*b.realNumberValue_apx) + (b.imaginaryNumberValue_apx*b.imaginaryNumberValue_apx)));
+        toReturn.imaginaryNumberValue_apx = (
+                                    ( (a.imaginaryNumberValue_apx*b.realNumberValue_apx) - (a.realNumberValue_apx*b.imaginaryNumberValue_apx) ) 
+                                        / 
+                                     ( (b.realNumberValue_apx*b.realNumberValue_apx) + (b.imaginaryNumberValue_apx*b.imaginaryNumberValue_apx) ))   ;
+
+    return toReturn; /*(acnfl_NumberObject) {
         ((acnfl_NumberObject *) extra)->nType, 'a',
         .realNumberValue_apx = ( ( (a.realNumberValue_apx * b.realNumberValue_apx) + (a.imaginaryNumberValue_apx+b.imaginaryNumberValue_apx) ) 
                                     / 
@@ -397,7 +409,7 @@ acnfl_NumberObject acnfl_binary_a_a_divide(acnfl_NumberObject a, acnfl_NumberObj
         .imaginaryNumberValue_apx = (( (a.imaginaryNumberValue_apx*b.realNumberValue_apx) - (a.realNumberValue_apx*b.imaginaryNumberValue_apx) ) 
                                         / 
                                      ( (b.realNumberValue_apx*b.realNumberValue_apx) + (b.imaginaryNumberValue_apx*b.imaginaryNumberValue_apx) ))
-    };
+    };*/
 }
 
 /** List of internal division functions. */
