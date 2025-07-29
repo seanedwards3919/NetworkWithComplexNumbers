@@ -116,13 +116,55 @@ void test_appx_multiplication(void) {
     ACNFL_testing_equal( 
         acnfl_multiply(gApx(1.2,1), gApx(0, 1.4)), 
         gApx(-1.4, 1.68));
+    
+    ACNFL_testing_equal(
+        acnfl_multiply(gApx(-1,2),gApx(0,1) ), 
+        gApx(-2,-1))
+
+    ACNFL_testing_equal( 
+        acnfl_multiply(gApx(1.2,0), gApx(0, 0)), 
+        gApx(0, 0));
+
+    ACNFL_testing_equal( 
+        acnfl_multiply(gApx(1.2,0), gApx(0, 0)), 
+        gApx(0, 0));
+
+    ACNFL_testing_equal( 
+        acnfl_multiply(gApx(26.77,1245.12), gApx(2, 0)), 
+        gApx(53.54, 2490.24));
+        
+    ACNFL_testing_equal( 
+        acnfl_multiply(gApx(2,3), gApx(0, 1)), 
+        gApx(-3,2));
+
+    ACNFL_testing_equal( 
+        acnfl_multiply(gApx(2,3), gApx(0, -1)), 
+        gApx(3,-2));
+
 }
 
+void test_appx_division(void) {
+ ACNFL_testing_equal( 
+     acnfl_divide(gApx(1,2), gApx(3, 4)), 
+    gApx((11.0/25.0),(2.0/25.0)));
+ ACNFL_testing_equal( 
+     acnfl_divide(gApx(1,2), gApx(-3, -4)), 
+    gApx((-11.0/25.0),(-2.0/25.0)));
+
+ ACNFL_testing_equal( 
+     acnfl_divide(gApx(1241.124,12.4), gApx(-645, 25)), 
+    gApx((-1.92059),(-0.09366)));
+
+
+
+
+}
 
 CU_TestInfo tests_appx_db[] = {
     {"Equality_inequality", test_appx_equality_inequality},
     {"Addition_subtraction", test_appx_addition},
     {"Multiplication", test_appx_multiplication},
+    {"Division", test_appx_division},
     CU_TEST_INFO_NULL
 };
 
