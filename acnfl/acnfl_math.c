@@ -445,7 +445,8 @@ acnfl_NumberObject acnfl_divide(acnfl_NumberObject a, acnfl_NumberObject b) {
  * opreation that will be performed is decided by the information passed through
  * acnfl_defaultComparisonInformation.
  * 
-* 
+*  Please see the documentation for acnfl_defaultComparisonInformation for 
+ * more details.
  */
 
 float acnfl_defaultComparison(acnfl_NumberObject a, acnfl_NumberObject b,

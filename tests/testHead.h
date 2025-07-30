@@ -1,3 +1,9 @@
+
+/**
+ * @file testHead.h
+ * 
+ * Header for testHead.c
+ **/
 #include <CUnit/CUError.h>
 #include <CUnit/CUnit.h>
 

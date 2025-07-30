@@ -73,6 +73,10 @@ typedef struct acnfl_numberObject {
  * 
  * @param epsilon_apx If leeway is true, this is the epsilon value that determines our 
  * leeway for near-equality when leeway_apx is true.
+ *
+ * TODO: Change default comparison operation so that it takes the imaginary 
+ * part into account without wrecking operations for "normal" non-complex
+ * numbers.
  */
 typedef struct {
     char opType;
