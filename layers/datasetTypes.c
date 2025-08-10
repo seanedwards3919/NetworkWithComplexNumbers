@@ -34,7 +34,8 @@ int layers_generic_objectDestroy(layers_DataSetObject *object) {
         object->dataSet = NULL;
       #endif
   }
-};
+  return 0;
+}
  
 
 
