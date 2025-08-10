@@ -44,6 +44,8 @@ typedef long double acnfl_valueType_apx;
  * @param imaginaryNumberValue_apx imaginary value of the number if approximate data type is used.
  * 
  * TODO: Determine type priority if there is more than one vType in play.
+ * The rule should be that if a hiher-precision vType is used in the same operation 
+ * as a lower-precision vType, then everything ends up converted to the higher-precision vType
  */
 typedef struct acnfl_numberObject {
     char nType; 
