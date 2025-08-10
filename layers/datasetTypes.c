@@ -23,6 +23,7 @@ int layers_generic_objectDestroy(layers_DataSetObject *object) {
   switch (object->dataSetType) {
     case LAYERS_DATASET_SINGULAR:
       layers_dataSetSingular_destroyObject(object->dataSet);
+      free(object->dataSet);
       object->dataSet = NULL;
       break;
     default:
@@ -41,31 +42,34 @@ int layers_generic_objectDestroy(layers_DataSetObject *object) {
 
 
 /**
- * Initializes a layers_DataSetSingular object into memory
- * and returns a pointer. The length of this new object is 0. 
+ * Initializes  the data for a layers_DataSetSingular object
+ * in memory. The length of this new object is 0. 
  * and dataList is not allocated yet (allocatedMemory == 0).
  * As always, check if this is NULL.
- * @return Pointer to new DataSetSingular object
+ *
+ * THIS DOES NOT INITIALIZE MEMORY FOR A layers_DataSetSingular object.
+ * @return Error code. Always returns zero at the moment, unless pointer
+ * is NULL (returns 1).
  */
-layers_DataSetSingular* layers_dataSetSingular_initializeMemory(void) {
-  layers_DataSetSingular *toReturn = malloc(sizeof(layers_DataSetSingular));
-  if (toReturn == NULL) return toReturn;
+int layers_dataSetSingular_initializeMemory(layers_DataSetSingular *object) {
+  if (object == NULL) return 1;
 
-  toReturn->length =0;
-  toReturn->allocatedMemory=0;
-  toReturn->dataList = NULL;
+  object->length =0;
+  object->allocatedMemory=0;
+  object->dataList = NULL;
 
-  return toReturn;
+  return 0;
 }
 ;
 /**
- * Frees all the memory taken up by a DataSetSingular object.
+ * Frees all the memory taken up by a DataSetSingular object, 
+ * but not the DataSetSingular object itself.
  * @param toBeDestroyed Pointer to a DataSetSingular object 
  * to be deallocated.
  * @return Error code. If this is zero, the operation executed succesfully
  * If 1, then error with toBeDestroyed
  */
-int layers_dataSetSingular_destroyObject(layers_DataSetSingular *toBeDestroyed) {
+int layers_dataSetSingular_deinitializeObject(layers_DataSetSingular *toBeDestroyed) {
   if (toBeDestroyed == NULL) {
     return 1;
   }
@@ -73,7 +77,6 @@ int layers_dataSetSingular_destroyObject(layers_DataSetSingular *toBeDestroyed) 
   if (toBeDestroyed->allocatedMemory != 0) {
     free(toBeDestroyed->dataList);
   }
-  free(toBeDestroyed);
 
   return  0;
 

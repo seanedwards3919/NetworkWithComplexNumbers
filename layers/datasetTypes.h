@@ -72,7 +72,8 @@ typedef struct layers_dataSetSingular {
  * As always, check if this is NULL.
  * @return Pointer to new DataSetSingular object
  */
-layers_DataSetSingular* layers_dataSetSingular_initializeMemory(void);
+
+int layers_dataSetSingular_initializeMemory(layers_DataSetSingular *object) ;
 /**
  * Frees all the memory taken up by a DataSetSingular object.
  * @param toBeDestroyed Pointer to a DataSetSingular object 
