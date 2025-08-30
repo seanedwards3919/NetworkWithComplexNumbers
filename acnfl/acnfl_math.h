@@ -34,10 +34,9 @@ typedef long double acnfl_valueType_apx;
  * 'e' - Indicates there is an error with the acnfl_NumberObject's number format.
  *
  * @param vType vType determines the 
- *  format used for storing numbers in the struct 
- * The only current valid values for vType (indicates format for number) is 'a' (approximate) or 'e' 
- * (indicates an error with the acnfl_NumberObject's value sorage).
- * 
+ *  format used for storing numbers in the struct.
+ * The only current valid values for vType (indicates format for number) is 'a' (approximate), 'e' 
+ * (indicates an error with the acnfl_NumberObject's value sorage), or 'd' (deliberate dummy value with no information stored.).
  * 'a' is simply a long double.
  *
  * @param realNumberValue_apx Real value of the number if approx data type is used.
@@ -99,6 +98,7 @@ float acnfl_defaultComparison 	( 	acnfl_NumberObject  	,
 		acnfl_NumberObject  	,
 		acnfl_defaultComparisonInformation  	) 		;
 
+void acnfl_printValue(acnfl_NumberObject number);
 
 #ifdef REPORTING_3
     void acnfl_errorReporting(acnfl_NumberObject *a) ;

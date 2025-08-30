@@ -581,3 +581,31 @@ acnfl_NumberObject acnfl_generateApx(long double real, long double imaginary) {
 
     return toReturn;
 }
+
+/******
+* Prints out the value of an acnfl_NumberObject in a human-readable format.
+* @param number Number to be printed
+***/
+
+void acnfl_printValue(acnfl_NumberObject number){
+    if (number.nType == 'e') {
+        printf("nTypeError");
+        return;
+    }
+    if (number.vType == 'e') {
+        printf("vTypeError");
+    }
+    if (number.vType == 'a'){
+        printf("%c%c/%Lf", number.vType, number.nType, number.realNumberValue_apx);
+            
+        if (signbit(number.imaginaryNumberValue_apx) != 0) {
+            printf("%Lf*i", number.imaginaryNumberValue_apx);
+
+        } else {
+            printf("+%Lf*i", number.imaginaryNumberValue_apx);
+        }
+    }
+    else {
+        printf("UnrecognizedVType");
+    }
+}
