@@ -22,6 +22,19 @@ typedef struct acnfl_genericFunctionResult {
 typedef acnfl_GenericFunctionResult (*acnfl_GenericFunctionDefinition)(
     long long int parameterCount, 
     acnfl_NumberObject *parameterList) ;
+
+/**Prints a single function result. Assumes all information is accurate .*/
+void acnfl_printFunctionResult(acnfl_GenericFunctionResult *indexPointer)
+{
+        for (int i = 0; i < indexPointer->resultsAmount; i++) {
+            printf("Result %i: ", i);
+            acnfl_printValue(indexPointer->results[i]);
+            printf("\n");
+
+        }
+
+
+}
 /***
 * Prints a list of function results.
 * Lists are expected to be terminated by a genericFunctionResults with resultsAmount == 0; 
