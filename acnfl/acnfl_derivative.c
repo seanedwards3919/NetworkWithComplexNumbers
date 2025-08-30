@@ -12,6 +12,8 @@
 
 #include "acnfl_math.h"
 #include <stdlib.h>
+#include <math.h>
+#include "../reporting/reporting_3.h"
 
 typedef struct acnfl_genericFunctionResult {
     long long int resultsAmount;
@@ -43,16 +45,12 @@ void acnfl_printListOfFunctionResults(acnfl_GenericFunctionResult *list) {
         acnfl_GenericFunctionResult *indexPointer = list;
     while (indexPointer->resultsAmount != 0) {
         printf("Equation result at %p:\n", (void*)indexPointer);
-        for (int i = 0; i < indexPointer->resultsAmount; i++) {
-            printf("Result %i: ", i);
-            acnfl_printValue(indexPointer->results[i]);
-            printf("\n");
-
-        }
-
+        acnfl_printFunctionResult(indexPointer);
         indexPointer++;
     }
+    #ifdef REPORTING_1
     printf("Zero element founds at index %p, quitting\n", (void*)indexPointer);
+    #endif
     return;
 
 }
