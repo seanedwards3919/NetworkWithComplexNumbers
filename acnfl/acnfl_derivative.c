@@ -65,9 +65,8 @@ void acnfl_freeHeldResults(acnfl_GenericFunctionResult *results) {
 }
 
 /** Frees the pointeres held by GenericFunctionResults in a list.*/
-void acnfl_freeListOfFunctionResults(acnfl_GenericFunctionResult *list) { 
-    int i = 0;
-    while(list[i].resultsAmount != 0) {
+void acnfl_freeListOfFunctionResults(acnfl_GenericFunctionResult *list, int length) { 
+    for(int i = 0; i< length; i++) {
     //for (int i = 0; i < lengthOfList; i++ ) {
          
 
@@ -90,13 +89,9 @@ acnfl_GenericFunctionResult acnfl_derivative(acnfl_NumberObject location,
  
     //Delta. Value to use in the difference quotient
     acnfl_NumberObject delta    = acnfl_generateApx(0.001, 0.001);
-    acnfl_GenericFunctionResult results[numberOfTests+1];
+    acnfl_GenericFunctionResult results[numberOfTests];
     
-    // Set up end buffer. Other functions use this to know when the list ends.
-    results[(numberOfTests)] = (acnfl_GenericFunctionResult) {.resultsAmount =0};
-    //resultsBank[(numberOfTests*2)] = (acnfl_GenericFunctionResult) {.resultsAmount =0};
-
-    // For as many times as numberOfTests
+   // For as many times as numberOfTests
     for (int i = 0; i < numberOfTests; i++) {
         // Get first part of finite difference for test i 
         acnfl_GenericFunctionResult resultsBank_A = functionPointer(1,  (acnfl_NumberObject[]) { acnfl_add(location, delta)}); /**  TODO: VALGRIND MEMORY ERROR*/ 
@@ -114,8 +109,12 @@ acnfl_GenericFunctionResult acnfl_derivative(acnfl_NumberObject location,
         if (resultsBank_A.resultsAmount != resultsBank_B.resultsAmount) printf("Different results gotten for two differnt locations. Quitting"),exit(1);
 
         // Create bank to hold differences between difference quotients. This should be the number of returned parameters 
-        results[i].results = malloc(sizeof(acnfl_NumberObject)*resultsBank_A.resultsAmount); /**  TODO: VALGRIND MEMORY ERROR */ 
-        results[i].resultsAmount = resultsBank_A.resultsAmount;
+        if (i < numberOfTests) {
+            results[i].results = malloc(sizeof(acnfl_NumberObject)*resultsBank_A.resultsAmount); /**  TODO: VALGRIND MEMORY ERROR */ 
+            results[i].resultsAmount = resultsBank_A.resultsAmount;
+        } else {
+            exit(1);
+        }
 
 
         //Get full difference quotient.
@@ -204,9 +203,8 @@ acnfl_GenericFunctionResult acnfl_derivative(acnfl_NumberObject location,
 
     // Memory cleanup. 
     {
-        {
-            acnfl_freeListOfFunctionResults(results);
-        }
+      
+         acnfl_freeListOfFunctionResults(results, numberOfTests);
     }
 
     return container_finalResult;
