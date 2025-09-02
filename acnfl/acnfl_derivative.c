@@ -90,44 +90,47 @@ acnfl_GenericFunctionResult acnfl_derivative(acnfl_NumberObject location,
  
     //Delta. Value to use in the difference quotient
     acnfl_NumberObject delta    = acnfl_generateApx(0.001, 0.001);
-    acnfl_GenericFunctionResult results[numberOfTests+1],
-                                resultsBank[(numberOfTests*2)+1];
+    acnfl_GenericFunctionResult results[numberOfTests+1];
     
     // Set up end buffer. Other functions use this to know when the list ends.
-    resultsBank[(numberOfTests)] = (acnfl_GenericFunctionResult) {.resultsAmount =0};
-    resultsBank[(numberOfTests*2)] = (acnfl_GenericFunctionResult) {.resultsAmount =0};
+    results[(numberOfTests)] = (acnfl_GenericFunctionResult) {.resultsAmount =0};
+    //resultsBank[(numberOfTests*2)] = (acnfl_GenericFunctionResult) {.resultsAmount =0};
 
     // For as many times as numberOfTests
     for (int i = 0; i < numberOfTests; i++) {
         // Get first part of finite difference for test i 
-        resultsBank[(i*2)] = functionPointer(1,  (acnfl_NumberObject[]) { acnfl_add(location, delta)});
+        acnfl_GenericFunctionResult resultsBank_A = functionPointer(1,  (acnfl_NumberObject[]) { acnfl_add(location, delta)}); /**  TODO: VALGRIND MEMORY ERROR*/ 
         // Get second part of finite difference for test i
-        resultsBank[(i*2)+1] = functionPointer(1,  (acnfl_NumberObject[]) { location});
+        acnfl_GenericFunctionResult resultsBank_B = functionPointer(1,  (acnfl_NumberObject[]) { location}); /**  TODO: VALGRIND MEMORY ERROR */ 
 
         #ifdef REPORTING_1
             printf("\nDiff: \n");
-            acnfl_printFunctionResult(resultsBank + (i*2));
+            acnfl_printFunctionResult(&resultsBank_A);
             printf("...\nto ...\n");
-            acnfl_printFunctionResult(resultsBank + (i*2) +1);
+            acnfl_printFunctionResult(&resultsBank_B);
         #endif
 
         // Make sure both parts have the same number of returned parameters.
-        if (resultsBank[i*2].resultsAmount != resultsBank[(i*2)+1].resultsAmount) printf("Different results gotten for two differnt locations. Quitting"),exit(1);
+        if (resultsBank_A.resultsAmount != resultsBank_B.resultsAmount) printf("Different results gotten for two differnt locations. Quitting"),exit(1);
 
         // Create bank to hold differences between difference quotients. This should be the number of returned parameters 
-        results[i].results = malloc(sizeof(acnfl_NumberObject)*resultsBank[i*2].resultsAmount);
-        results[i].resultsAmount = resultsBank[i*2].resultsAmount;
+        results[i].results = malloc(sizeof(acnfl_NumberObject)*resultsBank_A.resultsAmount); /**  TODO: VALGRIND MEMORY ERROR */ 
+        results[i].resultsAmount = resultsBank_A.resultsAmount;
 
 
         //Get full difference quotient.
         //Does the calculation for each of the returned paramteters.
         for (int locationIndex = 0; locationIndex < results[i].resultsAmount; locationIndex++) {
-            results[i].results[locationIndex] = acnfl_divide(ancfl_subtract( resultsBank[i*2].results[locationIndex], resultsBank[(i*2)+1].results[locationIndex] ), delta);
+            results[i].results[locationIndex] = acnfl_divide(ancfl_subtract( resultsBank_A.results[locationIndex], resultsBank_B.results[locationIndex] ), delta);
 
         }
 
         //Decrease delta and have it be closer to location 
         delta = acnfl_divide(delta, acnfl_generateApx(2, 0));
+
+        // Free memory
+        free(resultsBank_A.results);
+        free(resultsBank_B.results);
     } 
 
     // Check that all of the amounts for the resultsAmount are the same 
@@ -203,9 +206,8 @@ acnfl_GenericFunctionResult acnfl_derivative(acnfl_NumberObject location,
     {
         {
             acnfl_freeListOfFunctionResults(results);
-            acnfl_freeListOfFunctionResults(resultsBank);
         }
-            }
+    }
 
     return container_finalResult;
 }
