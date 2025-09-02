@@ -10,6 +10,7 @@
 #include <math.h>
 #include <CUnit/Automated.h>
 #include <CUnit/Console.h>
+#include <stdbool.h>
 
 
 #define COMMON_NUMBERS_LENGTH 200
@@ -49,7 +50,18 @@ int tests_initialize_numbers(){
 
 
 void test_appx_equality_inequality(void) {
-    char methods[] = {'d', 'i', 'a'};
+    acnfl_defaultComparisonInformation methods[] = {
+                            (acnfl_defaultComparisonInformation) {
+                               'd', true, 0.001
+                            }
+                        , 
+                            (acnfl_defaultComparisonInformation) {
+                                'i', true, 0.001
+                            }
+                        , 
+                            (acnfl_defaultComparisonInformation) {
+                                'a', true, 0.001
+                            }};
     
     // default method. 
     CU_ASSERT_EQUAL(acnfl_comparison(commonNumbers[0], commonNumbers[0], 0, methods), 0)
