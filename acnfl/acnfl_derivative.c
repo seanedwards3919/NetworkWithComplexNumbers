@@ -5,22 +5,22 @@
 
 
 /**TODO:
-    Implement simple finite differnces first
-    Implement interpolation through points
-    Implement ways to differentiate on the interpolation
+    Make sure to handle all cases where program exits ungracefully using exit();
  */
 
 #include "acnfl_math.h"
+#include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
 #include "../reporting/reporting_3.h"
 
+/** TODO: Provide documentation  */
 typedef struct acnfl_genericFunctionResult {
     long long int resultsAmount;
     acnfl_NumberObject* results;
 } acnfl_GenericFunctionResult;
 
-/**TODO: Is parameterCount needed? */
+/** TODO: Provide documentation */
 typedef acnfl_GenericFunctionResult (*acnfl_GenericFunctionDefinition)(
     long long int parameterCount, 
     acnfl_NumberObject *parameterList) ;
@@ -79,12 +79,16 @@ void acnfl_freeListOfFunctionResults(acnfl_GenericFunctionResult *list, int leng
 
 /***
  * Returns the instantanious rate of change for a function defined by acnfl_GenericFunctionDefinition at location, with specificity determined by numberOfTests
- * @param location The location of the instantanious rate of change on the function.
- * @param numberOfTests The number of times acnfl_derivative gets closer to location when calculating the difference quotient. In general, a higher value means a more accurate result.
+ * @param locationToDifferentiate Pointer to a list that represents the location of the instantanious rate of change on the function, where each entry is a single varaible.
+ * @param numberOfTests The number of times acnfl_derivative gets closer to location when calculating the difference quotient. In general, a higher value means a more accurate result, though over-large values can trigger unexpected behavior
+ * @param numberOfLocations The length of location.
+ * @param indexToDerive The index of the variable location to derive. If this is 0, for example, a partial derivative for the varible in the 0th index of function pointer will be computed at the point locationToDifferentiate (see above).
+ * @param functionPointer The function to differentiate. 
  *
  * TODO: Pathalogical behavior at high numberOfTests? Inserting 3*i for x_squared gives 3+3*i instead of 6*i
+ * TODO: This function WILL  crash the program by calling exit() if undefined behavior is detected.
  **/
-acnfl_GenericFunctionResult acnfl_derivative(acnfl_NumberObject location,
+acnfl_GenericFunctionResult acnfl_derivative(acnfl_NumberObject *locationToDifferentiate, int numberOfLocations, int indexToDerive,
     int numberOfTests, acnfl_GenericFunctionDefinition functionPointer) {
  
     //Delta. Value to use in the difference quotient
@@ -93,10 +97,27 @@ acnfl_GenericFunctionResult acnfl_derivative(acnfl_NumberObject location,
     
    // For as many times as numberOfTests
     for (int i = 0; i < numberOfTests; i++) {
-        // Get first part of finite difference for test i 
-        acnfl_GenericFunctionResult resultsBank_A = functionPointer(1,  (acnfl_NumberObject[]) { acnfl_add(location, delta)}); /**  TODO: VALGRIND MEMORY ERROR*/ 
+        // Get first part of finite difference for test i — This involves modifying the variable in 
+        // indexToDerive by adding it to delta
+        acnfl_NumberObject newLocationList[numberOfLocations];
+        {
+            // Get modified parameter
+            if (indexToDerive >= numberOfLocations) exit(1);
+            acnfl_NumberObject modifiedParameter = acnfl_add(locationToDifferentiate[indexToDerive], delta);
+            // Get new list with modified parameter
+            for (int i = 0; i < numberOfLocations; i++) {
+                if (i == indexToDerive) {
+                    newLocationList[i] = modifiedParameter;
+                } else {
+                    newLocationList[i] = locationToDifferentiate[i];
+                }
+            }
+
+        }
+        acnfl_GenericFunctionResult resultsBank_A = functionPointer(numberOfLocations, newLocationList); 
+        
         // Get second part of finite difference for test i
-        acnfl_GenericFunctionResult resultsBank_B = functionPointer(1,  (acnfl_NumberObject[]) { location}); /**  TODO: VALGRIND MEMORY ERROR */ 
+        acnfl_GenericFunctionResult resultsBank_B = functionPointer(numberOfLocations,   locationToDifferentiate); 
 
         #ifdef REPORTING_1
             printf("\nDiff: \n");
@@ -110,7 +131,7 @@ acnfl_GenericFunctionResult acnfl_derivative(acnfl_NumberObject location,
 
         // Create bank to hold differences between difference quotients. This should be the number of returned parameters 
         if (i < numberOfTests) {
-            results[i].results = malloc(sizeof(acnfl_NumberObject)*resultsBank_A.resultsAmount); /**  TODO: VALGRIND MEMORY ERROR */ 
+            results[i].results = malloc(sizeof(acnfl_NumberObject)*resultsBank_A.resultsAmount); 
             results[i].resultsAmount = resultsBank_A.resultsAmount;
         } else {
             exit(1);
@@ -213,10 +234,14 @@ acnfl_GenericFunctionResult acnfl_derivative(acnfl_NumberObject location,
 /**
  * Prints a derivative. Mostly used for testing. 
  */
-void print_derivative(acnfl_NumberObject locationA, acnfl_GenericFunctionResult derivativeA) {
+void print_derivative(acnfl_NumberObject *locationA, int locationLength, acnfl_GenericFunctionResult derivativeA) {
     {
         printf("\nThe derivative at ");
-        acnfl_printValue(locationA);
+        for (int i = 0; i < locationLength; i++) {
+            printf("x%d:", i);
+            acnfl_printValue(*locationA);
+            if (!(i+1 == locationLength)) printf(", ");
+        }
         printf(" is ");
         for (int i = 0; i < derivativeA.resultsAmount; i++) {
             acnfl_printValue(derivativeA.results[i]);
