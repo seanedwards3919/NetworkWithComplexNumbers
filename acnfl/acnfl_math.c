@@ -358,12 +358,7 @@ acnfl_NumberObject ancfl_subtract(acnfl_NumberObject a, acnfl_NumberObject b) {
 
 
         return toReturn;
-            /*(acnfl_NumberObject) {((acnfl_NumberObject*) extra )->nType, 'a', 
-                .realNumberValue_apx = ( (a.realNumberValue_apx * b.realNumberValue_apx)
-                                         - (a.imaginaryNumberValue_apx * b.imaginaryNumberValue_apx)),
-                .imaginaryNumberValue_apx = ( (a.realNumberValue_apx * b.imaginaryNumberValue_apx)
-                                         + (a.imaginaryNumberValue_apx * b.realNumberValue_apx)) };*/
-    }
+   }
 
 /**
  * List of internal multiplication functions.
@@ -401,16 +396,7 @@ acnfl_NumberObject acnfl_binary_a_a_divide(acnfl_NumberObject a, acnfl_NumberObj
                                         / 
                                      ( (b.realNumberValue_apx*b.realNumberValue_apx) + (b.imaginaryNumberValue_apx*b.imaginaryNumberValue_apx) ))   ;
 
-    return toReturn; /*(acnfl_NumberObject) {
-        ((acnfl_NumberObject *) extra)->nType, 'a',
-        .realNumberValue_apx = ( ( (a.realNumberValue_apx * b.realNumberValue_apx) + (a.imaginaryNumberValue_apx+b.imaginaryNumberValue_apx) ) 
-                                    / 
-                                 ( (b.realNumberValue_apx*b.realNumberValue_apx) + (b.imaginaryNumberValue_apx*b.imaginaryNumberValue_apx))),
-        .imaginaryNumberValue_apx = (( (a.imaginaryNumberValue_apx*b.realNumberValue_apx) - (a.realNumberValue_apx*b.imaginaryNumberValue_apx) ) 
-                                        / 
-                                     ( (b.realNumberValue_apx*b.realNumberValue_apx) + (b.imaginaryNumberValue_apx*b.imaginaryNumberValue_apx) ))
-    };*/
-}
+    return toReturn; }
 
 /** List of internal division functions. */
 acnfl_NumberObject (*acnfl_divideFunctions[NUMBEROF_FUNCTION_OPERATIONS])(acnfl_NumberObject, acnfl_NumberObject, void*) = 
@@ -580,4 +566,32 @@ acnfl_NumberObject acnfl_generateApx(long double real, long double imaginary) {
     toReturn.realNumberValue_apx = real;
 
     return toReturn;
+}
+
+/******
+* Prints out the value of an acnfl_NumberObject in a human-readable format.
+* @param number Number to be printed
+***/
+
+void acnfl_printValue(acnfl_NumberObject number){
+    if (number.nType == 'e') {
+        printf("nTypeError");
+        return;
+    }
+    if (number.vType == 'e') {
+        printf("vTypeError");
+    }
+    if (number.vType == 'a'){
+        printf("%c%c/%Lf", number.vType, number.nType, number.realNumberValue_apx);
+            
+        if (signbit(number.imaginaryNumberValue_apx) != 0) {
+            printf("%Lf*i", number.imaginaryNumberValue_apx);
+
+        } else {
+            printf("+%Lf*i", number.imaginaryNumberValue_apx);
+        }
+    }
+    else {
+        printf("UnrecognizedVType");
+    }
 }

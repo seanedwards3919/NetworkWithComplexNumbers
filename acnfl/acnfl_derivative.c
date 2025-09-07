@@ -1,0 +1,250 @@
+/**
+ * @file acnfl_derivative.c
+ * Provides tools for the calcultion of numerical derivatives that integrate with acnfl_math.c.
+ **/
+
+
+/**TODO:
+    Make sure to handle all cases where program exits ungracefully using exit();
+ */
+
+#include "acnfl_derivative.h"
+#include <stdio.h>
+#include <stdlib.h>
+#include <math.h>
+#include "../reporting/reporting_3.h"
+/**Prints a single function result. Assumes all information is accurate .*/
+void acnfl_printFunctionResult(acnfl_GenericFunctionResult *indexPointer)
+{
+        for (int i = 0; i < indexPointer->resultsAmount; i++) {
+            printf("Result %i: ", i);
+            acnfl_printValue(indexPointer->results[i]);
+            printf("\n");
+
+        }
+
+
+}
+/***
+* Prints a list of function results.
+* Lists are expected to be terminated by a genericFunctionResults with resultsAmount == 0; 
+*/
+void acnfl_printListOfFunctionResults(acnfl_GenericFunctionResult *list) {
+        acnfl_GenericFunctionResult *indexPointer = list;
+    while (indexPointer->resultsAmount != 0) {
+        printf("Equation result at %p:\n", (void*)indexPointer);
+        acnfl_printFunctionResult(indexPointer);
+        indexPointer++;
+    }
+    #ifdef REPORTING_1
+    printf("Zero element founds at index %p, quitting\n", (void*)indexPointer);
+    #endif
+    return;
+
+}
+/**
+ * Function that frees the allocated memory inside of a 
+ * acnfl_GenericFunctionResult object pointed to by results.
+ * @param results Pointer to GenericFunctionResult whose memory will be deallocated.
+ */
+void acnfl_freeHeldResults(acnfl_GenericFunctionResult *results) {
+    if (results == NULL) return;
+    if ((results->results != NULL) && (results->resultsAmount != 0) ) {
+        free(results->results);
+    }
+    results->results=NULL;
+    results->resultsAmount =0; 
+
+}
+
+/** Frees the pointeres held by GenericFunctionResults in a list.*/
+void acnfl_freeListOfFunctionResults(acnfl_GenericFunctionResult *list, int length) { 
+    for(int i = 0; i< length; i++) {
+    //for (int i = 0; i < lengthOfList; i++ ) {
+         
+
+        acnfl_freeHeldResults(list+i);
+        
+    }
+    return;
+}
+
+/***
+ * Returns the instantanious rate of change for a function with a type signature matching acnfl_GenericFunctionDefinition, using varable specified indexToDerive, at locationToDifferentiate, with specificity determined by numberOfTests
+ * @param locationToDifferentiate Pointer to a list that represents the location of the instantanious rate of change on the function, where each entry is a single varaible.
+ * @param numberOfTests The number of times acnfl_derivative gets closer to location when calculating the difference quotient. In general, a higher value means a more accurate result, though over-large values can trigger unexpected behavior
+ * @param numberOfLocations The length of location.
+ * @param indexToDerive The index of the variable location to derive. If this is 0, for example, a partial derivative for the varible in the 0th index of function pointer will be computed at the point locationToDifferentiate (see above).
+ * @param functionPointer The function to differentiate. 
+ *
+ * TODO: Pathalogical behavior at high numberOfTests? Inserting 3*i for x_squared gives 3+3*i instead of 6*i
+ * TODO: This function WILL  crash the program by calling exit() if undefined behavior is detected. Clean this up?
+ **/
+acnfl_GenericFunctionResult acnfl_derivative(acnfl_NumberObject *locationToDifferentiate, int numberOfLocations, int indexToDerive, int numberOfTests, acnfl_GenericFunctionDefinition functionPointer, acnfl_NumberObject delta) {
+    //Delta. Value to use in the difference quotient
+    acnfl_GenericFunctionResult results[numberOfTests];
+    
+   // For as many times as numberOfTests
+    for (int i = 0; i < numberOfTests; i++) {
+        // Get first part of finite difference for test i — This involves modifying the variable in 
+        // indexToDerive by adding it to delta
+        acnfl_NumberObject newLocationList[numberOfLocations];
+        {
+            // Get modified parameter
+            if (indexToDerive >= numberOfLocations) exit(1);
+            acnfl_NumberObject modifiedParameter = acnfl_add(locationToDifferentiate[indexToDerive], delta);
+            // Get new list with modified parameter
+            for (int i = 0; i < numberOfLocations; i++) {
+                if (i == indexToDerive) {
+                    newLocationList[i] = modifiedParameter;
+                } else {
+                    newLocationList[i] = locationToDifferentiate[i];
+                }
+            }
+
+        }
+        acnfl_GenericFunctionResult resultsBank_A = functionPointer(numberOfLocations, newLocationList); 
+        
+        // Get second part of finite difference for test i
+        acnfl_GenericFunctionResult resultsBank_B = functionPointer(numberOfLocations,   locationToDifferentiate); 
+
+        #ifdef REPORTING_1
+            printf("\nDiff: \n");
+            acnfl_printFunctionResult(&resultsBank_A);
+            printf("...\nto ...\n");
+            acnfl_printFunctionResult(&resultsBank_B);
+        #endif
+
+        // Make sure both parts have the same number of returned parameters.
+        if (resultsBank_A.resultsAmount != resultsBank_B.resultsAmount) printf("Different results gotten for two differnt locations. Quitting"),exit(1);
+
+        // Create bank to hold differences between difference quotients. This should be the number of returned parameters 
+        if (i < numberOfTests) {
+            results[i].results = malloc(sizeof(acnfl_NumberObject)*resultsBank_A.resultsAmount); 
+            results[i].resultsAmount = resultsBank_A.resultsAmount;
+        } else {
+            exit(1);
+        }
+
+
+        //Get full difference quotient.
+        //Does the calculation for each of the returned paramteters.
+        for (int locationIndex = 0; locationIndex < results[i].resultsAmount; locationIndex++) {
+            results[i].results[locationIndex] = acnfl_divide(ancfl_subtract( resultsBank_A.results[locationIndex], resultsBank_B.results[locationIndex] ), delta);
+
+        }
+
+        //Decrease delta and have it be closer to location 
+        delta = acnfl_divide(delta, acnfl_generateApx(2, 0));
+
+        // Free memory
+        free(resultsBank_A.results);
+        free(resultsBank_B.results);
+    } 
+
+    // Check that all of the amounts for the resultsAmount are the same 
+    {
+        if (numberOfTests > 1)  {
+            for (int i = 1; i < numberOfTests; i++) {
+                if (results[i-1].resultsAmount != results[i].resultsAmount) {
+                    #ifdef  REPORTING_3 
+                        printf("The resultsAmount is inconsistent among different results entries.");
+                    #endif
+                    exit(1);
+                }
+            }
+        }
+    }
+
+        // Create container full of results to return 
+        int finalResult_length = results[0].resultsAmount;
+
+        acnfl_GenericFunctionResult container_finalResult = {.resultsAmount = finalResult_length,
+                .results = malloc(sizeof(acnfl_NumberObject)*finalResult_length)};
+        if (container_finalResult.results == NULL) {
+            exit(1);
+        }
+        
+        //Initialze container to return/
+        acnfl_NumberObject *finalResult = container_finalResult.results;
+        #define FINALRESULT_LENGTH results[0].resultsAmount
+        {
+            for (int i = 0; i < FINALRESULT_LENGTH; i++) {
+                finalResult[i] = acnfl_generateApx(0, 0);
+            }
+        }
+
+    // Average together all of the calculations. 
+    // Bias conclusion torwards the results closer to location
+    
+    // Calculate "total space" for all of the conclusions
+    #define RATIO_TOTAL_FORMULA(number)  3 * pow(6.0/5, number)
+    double total = 0; 
+    for (int currentNumber = 0; currentNumber < numberOfTests; currentNumber++) {
+        total += RATIO_TOTAL_FORMULA(currentNumber);
+    }
+    #ifdef REPORTING_1
+        printf("Total is %f", total);
+    #endif
+    // Average out and add together results
+    for (int i = 0; i < numberOfTests ; i++){
+
+        long double ratio = 0.0;
+        {
+            // Figure out the percentage of the total that this result is going to make up.
+            #ifdef REPORTING_1
+
+                printf("\n%d is %f, %f/%f is %f %% \n\n", 
+                        i+1, RATIO_TOTAL_FORMULA(i), RATIO_TOTAL_FORMULA(i), total, (RATIO_TOTAL_FORMULA(i))/total);
+            #endif
+
+            ratio  = (RATIO_TOTAL_FORMULA(i))/total;
+        }
+        // Add this to the result
+        {
+            for (int j = 0; j < results->resultsAmount ; j ++) {
+                acnfl_NumberObject product = acnfl_multiply(acnfl_generateApx(ratio, 0), results[i].results[j]);
+                finalResult[j] = acnfl_add(finalResult[j], product);
+            }
+       }
+
+    }
+    
+
+    // Memory cleanup. 
+    {
+      
+         acnfl_freeListOfFunctionResults(results, numberOfTests);
+    }
+
+    return container_finalResult;
+}
+
+
+acnfl_GenericFunctionResult acnfl_derivative_default(acnfl_NumberObject *locationToDifferentiate, int numberOfLocations, int indexToDerive, int numberOfTests, acnfl_GenericFunctionDefinition functionPointer) 
+{
+    acnfl_NumberObject delta    = acnfl_generateApx(0.001, 0.001);
+    return acnfl_derivative(locationToDifferentiate, numberOfLocations, indexToDerive, numberOfTests, functionPointer, delta); 
+}
+
+
+
+/**
+ * Prints a derivative. Mostly used for testing. 
+ */
+void print_derivative(acnfl_NumberObject *locationA, int locationLength, acnfl_GenericFunctionResult derivativeA) {
+    {
+        printf("\nThe derivative at ");
+        for (int i = 0; i < locationLength; i++) {
+            printf("x%d:", i);
+            acnfl_printValue(*(locationA+i));
+            if (!(i+1 == locationLength)) printf(", ");
+        }
+        printf(" is ");
+        for (int i = 0; i < derivativeA.resultsAmount; i++) {
+            acnfl_printValue(derivativeA.results[i]);
+            printf(" ");
+        }
+    }
+}
+
