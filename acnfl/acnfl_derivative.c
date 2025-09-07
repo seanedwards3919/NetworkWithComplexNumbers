@@ -90,13 +90,10 @@ void acnfl_freeListOfFunctionResults(acnfl_GenericFunctionResult *list, int leng
  * @param functionPointer The function to differentiate. 
  *
  * TODO: Pathalogical behavior at high numberOfTests? Inserting 3*i for x_squared gives 3+3*i instead of 6*i
- * TODO: This function WILL  crash the program by calling exit() if undefined behavior is detected.
+ * TODO: This function WILL  crash the program by calling exit() if undefined behavior is detected. Clean this up?
  **/
-acnfl_GenericFunctionResult acnfl_derivative(acnfl_NumberObject *locationToDifferentiate, int numberOfLocations, int indexToDerive,
-    int numberOfTests, acnfl_GenericFunctionDefinition functionPointer) {
- 
+acnfl_GenericFunctionResult acnfl_derivative(acnfl_NumberObject *locationToDifferentiate, int numberOfLocations, int indexToDerive, int numberOfTests, acnfl_GenericFunctionDefinition functionPointer, acnfl_NumberObject delta) {
     //Delta. Value to use in the difference quotient
-    acnfl_NumberObject delta    = acnfl_generateApx(0.001, 0.001);
     acnfl_GenericFunctionResult results[numberOfTests];
     
    // For as many times as numberOfTests
@@ -234,6 +231,15 @@ acnfl_GenericFunctionResult acnfl_derivative(acnfl_NumberObject *locationToDiffe
 
     return container_finalResult;
 }
+
+
+acnfl_GenericFunctionResult acnfl_derivative_default(acnfl_NumberObject *locationToDifferentiate, int numberOfLocations, int indexToDerive, int numberOfTests, acnfl_GenericFunctionDefinition functionPointer) 
+{
+    acnfl_NumberObject delta    = acnfl_generateApx(0.001, 0.001);
+    return acnfl_derivative(locationToDifferentiate, numberOfLocations, indexToDerive, numberOfTests, functionPointer, delta); 
+}
+
+
 
 /**
  * Prints a derivative. Mostly used for testing. 
