@@ -249,7 +249,7 @@ void print_derivative(acnfl_NumberObject *locationA, int locationLength, acnfl_G
         printf("\nThe derivative at ");
         for (int i = 0; i < locationLength; i++) {
             printf("x%d:", i);
-            acnfl_printValue(*locationA);
+            acnfl_printValue(*(locationA+i));
             if (!(i+1 == locationLength)) printf(", ");
         }
         printf(" is ");
