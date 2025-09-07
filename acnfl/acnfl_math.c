@@ -358,12 +358,7 @@ acnfl_NumberObject ancfl_subtract(acnfl_NumberObject a, acnfl_NumberObject b) {
 
 
         return toReturn;
-            /*(acnfl_NumberObject) {((acnfl_NumberObject*) extra )->nType, 'a', 
-                .realNumberValue_apx = ( (a.realNumberValue_apx * b.realNumberValue_apx)
-                                         - (a.imaginaryNumberValue_apx * b.imaginaryNumberValue_apx)),
-                .imaginaryNumberValue_apx = ( (a.realNumberValue_apx * b.imaginaryNumberValue_apx)
-                                         + (a.imaginaryNumberValue_apx * b.realNumberValue_apx)) };*/
-    }
+   }
 
 /**
  * List of internal multiplication functions.
@@ -401,16 +396,7 @@ acnfl_NumberObject acnfl_binary_a_a_divide(acnfl_NumberObject a, acnfl_NumberObj
                                         / 
                                      ( (b.realNumberValue_apx*b.realNumberValue_apx) + (b.imaginaryNumberValue_apx*b.imaginaryNumberValue_apx) ))   ;
 
-    return toReturn; /*(acnfl_NumberObject) {
-        ((acnfl_NumberObject *) extra)->nType, 'a',
-        .realNumberValue_apx = ( ( (a.realNumberValue_apx * b.realNumberValue_apx) + (a.imaginaryNumberValue_apx+b.imaginaryNumberValue_apx) ) 
-                                    / 
-                                 ( (b.realNumberValue_apx*b.realNumberValue_apx) + (b.imaginaryNumberValue_apx*b.imaginaryNumberValue_apx))),
-        .imaginaryNumberValue_apx = (( (a.imaginaryNumberValue_apx*b.realNumberValue_apx) - (a.realNumberValue_apx*b.imaginaryNumberValue_apx) ) 
-                                        / 
-                                     ( (b.realNumberValue_apx*b.realNumberValue_apx) + (b.imaginaryNumberValue_apx*b.imaginaryNumberValue_apx) ))
-    };*/
-}
+    return toReturn; }
 
 /** List of internal division functions. */
 acnfl_NumberObject (*acnfl_divideFunctions[NUMBEROF_FUNCTION_OPERATIONS])(acnfl_NumberObject, acnfl_NumberObject, void*) = 

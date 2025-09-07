@@ -8,23 +8,11 @@
     Make sure to handle all cases where program exits ungracefully using exit();
  */
 
-#include "acnfl_math.h"
+#include "acnfl_derivative.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
 #include "../reporting/reporting_3.h"
-
-/** TODO: Provide documentation  */
-typedef struct acnfl_genericFunctionResult {
-    long long int resultsAmount;
-    acnfl_NumberObject* results;
-} acnfl_GenericFunctionResult;
-
-/** TODO: Provide documentation */
-typedef acnfl_GenericFunctionResult (*acnfl_GenericFunctionDefinition)(
-    long long int parameterCount, 
-    acnfl_NumberObject *parameterList) ;
-
 /**Prints a single function result. Assumes all information is accurate .*/
 void acnfl_printFunctionResult(acnfl_GenericFunctionResult *indexPointer)
 {
