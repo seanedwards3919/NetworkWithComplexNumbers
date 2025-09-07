@@ -54,9 +54,14 @@ void acnfl_printListOfFunctionResults(acnfl_GenericFunctionResult *list) {
     return;
 
 }
-///TODO: Add check if list is NULL
+/**
+ * Function that frees the allocated memory inside of a 
+ * acnfl_GenericFunctionResult object pointed to by results.
+ * @param results Pointer to GenericFunctionResult whose memory will be deallocated.
+ */
 void acnfl_freeHeldResults(acnfl_GenericFunctionResult *results) {
-    if (results->results != NULL /** TODO: and if ResultsAmount != 0 ... ?*/) {
+    if (results == NULL) return;
+    if ((results->results != NULL) && (results->resultsAmount != 0) ) {
         free(results->results);
     }
     results->results=NULL;
@@ -76,9 +81,8 @@ void acnfl_freeListOfFunctionResults(acnfl_GenericFunctionResult *list, int leng
     return;
 }
 
-
 /***
- * Returns the instantanious rate of change for a function defined by acnfl_GenericFunctionDefinition at location, with specificity determined by numberOfTests
+ * Returns the instantanious rate of change for a function with a type signature matching acnfl_GenericFunctionDefinition, using varable specified indexToDerive, at locationToDifferentiate, with specificity determined by numberOfTests
  * @param locationToDifferentiate Pointer to a list that represents the location of the instantanious rate of change on the function, where each entry is a single varaible.
  * @param numberOfTests The number of times acnfl_derivative gets closer to location when calculating the difference quotient. In general, a higher value means a more accurate result, though over-large values can trigger unexpected behavior
  * @param numberOfLocations The length of location.
