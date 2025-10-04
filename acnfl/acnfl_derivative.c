@@ -58,7 +58,7 @@ void acnfl_freeHeldResults(acnfl_GenericFunctionResult *results) {
 }
 
 /** Frees the pointeres held by GenericFunctionResults in a list.*/
-void acnfl_freeListOfFunctionResults(acnfl_GenericFunctionResult *list, int length) { 
+void acnfl_freeListOfFunctionResults(acnfl_GenericFunctionResult *list, int_functionParameter length) { 
     for(int i = 0; i< length; i++) {
     //for (int i = 0; i < lengthOfList; i++ ) {
          
@@ -80,7 +80,7 @@ void acnfl_freeListOfFunctionResults(acnfl_GenericFunctionResult *list, int leng
  * TODO: Pathalogical behavior at high numberOfTests? Inserting 3*i for x_squared gives 3+3*i instead of 6*i
  * TODO: This function WILL  crash the program by calling exit() if undefined behavior is detected. Clean this up?
  **/
-acnfl_GenericFunctionResult acnfl_derivative(acnfl_NumberObject *locationToDifferentiate, int numberOfLocations, int indexToDerive, int numberOfTests, acnfl_GenericFunctionDefinition functionPointer, acnfl_NumberObject delta) {
+acnfl_GenericFunctionResult acnfl_derivative(acnfl_NumberObject *locationToDifferentiate, int_functionParameter numberOfLocations, int_functionParameter indexToDerive, int_functionParameter numberOfTests, acnfl_GenericFunctionDefinition functionPointer, acnfl_NumberObject delta) {
     //Delta. Value to use in the difference quotient
     acnfl_GenericFunctionResult results[numberOfTests];
     
@@ -221,10 +221,10 @@ acnfl_GenericFunctionResult acnfl_derivative(acnfl_NumberObject *locationToDiffe
 }
 
 
-acnfl_GenericFunctionResult acnfl_derivative_default(acnfl_NumberObject *locationToDifferentiate, int numberOfLocations, int indexToDerive, int numberOfTests, acnfl_GenericFunctionDefinition functionPointer) 
+acnfl_GenericFunctionResult acnfl_derivative_default(acnfl_NumberObject *locationToDifferentiate, int_functionParameter numberOfLocations, int_functionParameter indexToDerive,  acnfl_GenericFunctionDefinition functionPointer) 
 {
     acnfl_NumberObject delta    = acnfl_generateApx(0.001, 0.001);
-    return acnfl_derivative(locationToDifferentiate, numberOfLocations, indexToDerive, numberOfTests, functionPointer, delta); 
+    return acnfl_derivative(locationToDifferentiate, numberOfLocations, indexToDerive, 10, functionPointer, delta); 
 }
 
 
@@ -232,7 +232,7 @@ acnfl_GenericFunctionResult acnfl_derivative_default(acnfl_NumberObject *locatio
 /**
  * Prints a derivative. Mostly used for testing. 
  */
-void print_derivative(acnfl_NumberObject *locationA, int locationLength, acnfl_GenericFunctionResult derivativeA) {
+void print_derivative(acnfl_NumberObject *locationA, int_functionParameter locationLength, acnfl_GenericFunctionResult derivativeA) {
     {
         printf("\nThe derivative at ");
         for (int i = 0; i < locationLength; i++) {
