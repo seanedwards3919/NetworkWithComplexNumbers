@@ -5,7 +5,11 @@
  **/
 
 #include "../acnfl/acnfl_math.h"
+#include "../acnfl/acnfl_derivative.h"
+#include "datasetTypes.h"
+#include <stdio.h>
 #include <stdlib.h>
+#include <time.h>
 
 /**
  * Struct that holds all of the parameters for  one 
@@ -16,7 +20,7 @@
  * @param weightMatrix_pointer
  * Pointer to a matrix of weight values. Upon initialization
  * and deinitialization this pointer should be NULL. For an  m x n
- * matrix (m rows, n columns), this is implemented as a pointer to
+ * matrix (m rows, n columns), this is implemented as a pointer into
  * an dynamically allocated array of m*n count acnfl_NumberObjects.
  * @param weightMatrix_rows
  * the Number of rows in weightMatrix_pointer.
@@ -27,16 +31,23 @@
  * @param biasVector_pointer
  * Pointer to a vector of bias values. Upon initialziation and 
  * deinitialization this pointer should be NULL. For an m-legnth 
- * vector, this is implemented as a poitner to a dynamically allocated
+ * vector, this is implemented as a poitner into a dynamically allocated
  * array of m acnfl_NumberObjects
  *
+ * ---- WEIGHTED INPUT PARAMETERS
+ * @param weightedInput_pointer
+ * Pointer to a vector of bias values. upon initialization and deinitalization this pointer should be null. For an m-length vector, this is implimented as a pointer into a dynamically allocated array of m acnfl_NumberObjects
  *
  * ---- OUTPUT VECTOR PARAMETERS
  * @param outputVector_pointer
  * Pinter to a vector of output values. Upon initalization 
  * and deinitialization this pointer should be NULL. For an 
- * m-length vector, this is implemented as a poitner to a dynamically allocated
+ * m-length vector, this is implemented as a poitner into a dynamically allocated
  * array of m acnfl_NumberObjects
+ *
+ * ---- ACTIVATION FUNCTION PARAMETERS
+ * @param activationFunction_pointer Pointer to this layer's activation function.
+ * Both the expected inputs and expected outputs should be one. TODO: Does this make sense...? Review math.
  *
  **/
 typedef struct neuronLayer_regularLayer {
@@ -51,10 +62,19 @@ typedef struct neuronLayer_regularLayer {
     /** The length of the bias vector is the same as the number of rows in the weight matrix.*/
     #define BIASVECTOR_LENGTH weightMatrix_rows
 
+    //Bias vectors
+    acnfl_NumberObject *weightedInput_pointer;
+    /** The length of the bias vector is the same as the number of rows in the weight matrix. */
+    #define WEIGHTEDINPUT_LENGTH weightMatrix_rows
+
+
     //Output vectors
     acnfl_NumberObject *outputVector_pointer;
     /** The length of the output vector is the same as the number of rows in the weight matrix. */
     #define OUTPUTVECTOR_LENGTH weightMatrix_rows
+
+    //Activation function
+    acnfl_GenericFunctionDefinition activationFunction_pointer;
 
     
 } neuronLayer_RegularLayer;
@@ -80,6 +100,7 @@ int neuronLayer_initialize(neuronLayer_RegularLayer *toBeInitialized) {
 
     toBeInitialized->biasVector_pointer = NULL;
     toBeInitialized->weightMatrix_pointer = NULL;
+    toBeInitialized->weightedInput_pointer = NULL;
     toBeInitialized->outputVector_pointer = NULL;
 
     toBeInitialized->weightMatrix_columns = 0;
@@ -98,17 +119,30 @@ int neuronLayer_initialize(neuronLayer_RegularLayer *toBeInitialized) {
  * @returns error code. 0 if finished successfuly, 1 if failed to allocate memory.
  **/
 int neuronLayer_configure(neuronLayer_RegularLayer *toBeConfigured, long long int columns, long long int rows) {
+    /** TODO: Optimization idea? Implement all of the seperate dynamically-allocated memory blocks here as one contigous block, where pointers simply reference offsets inside the block? Well, make sure that functions using neuronLayer_regularLayer actually work before trying this… */
     toBeConfigured->weightMatrix_columns = columns;
     toBeConfigured->weightMatrix_rows = rows;
 
     toBeConfigured->weightMatrix_pointer = malloc(sizeof(acnfl_NumberObject) * columns * rows);
-    if (toBeConfigured->weightMatrix_pointer == NULL) return 1;
+    if (toBeConfigured->weightMatrix_pointer == NULL) {
+        return 1;
+    }
+
+    toBeConfigured->weightedInput_pointer = malloc(sizeof(acnfl_NumberObject) * toBeConfigured->WEIGHTEDINPUT_LENGTH);
+    if (toBeConfigured->weightedInput_pointer == NULL) {
+        return 1;
+    }
 
     toBeConfigured->biasVector_pointer = malloc(sizeof(acnfl_NumberObject) * toBeConfigured->BIASVECTOR_LENGTH);
-    if (toBeConfigured->biasVector_pointer == NULL) return 1;
+    if (toBeConfigured->biasVector_pointer == NULL) {
+        return 1;
+    }
 
     toBeConfigured->outputVector_pointer = malloc(sizeof(acnfl_NumberObject) * toBeConfigured->OUTPUTVECTOR_LENGTH );
-    if (toBeConfigured->outputVector_pointer == NULL) return 1;
+    if (toBeConfigured->outputVector_pointer == NULL) {
+        return 1;
+    }
+
 
     return 0;
 }; 
@@ -123,12 +157,14 @@ int neuronLayer_configure(neuronLayer_RegularLayer *toBeConfigured, long long in
  **/
 int  neuronLayer_destroy(neuronLayer_RegularLayer *toBeDestroyed) {
     free(toBeDestroyed->biasVector_pointer);
+    free(toBeDestroyed->weightedInput_pointer);
     free(toBeDestroyed->weightMatrix_pointer);
     free(toBeDestroyed->outputVector_pointer);
 
     
     (toBeDestroyed->biasVector_pointer) = NULL;
     (toBeDestroyed->weightMatrix_pointer) = NULL;
+    (toBeDestroyed->weightedInput_pointer)= NULL;
     (toBeDestroyed->outputVector_pointer) = NULL;
 
     toBeDestroyed->weightMatrix_columns=0;
@@ -172,7 +208,7 @@ int  neuronLayer_destroy(neuronLayer_RegularLayer *toBeDestroyed) {
  * @returns A dynamically allocated array of acnfl_NumberObjects, count aheadLayer->weightMatrix. Don't forget to 
  * clean it up afterward. Returns NULL if error occured;
  ***/
-acnfl_NumberObject* linearCombinationCaluclate(neuronLayer_RegularLayer *behindLayer, neuronLayer_RegularLayer *aheadLayer) {
+acnfl_NumberObject* neuronLayer_linearCombinationCaluclate(neuronLayer_RegularLayer *behindLayer, neuronLayer_RegularLayer *aheadLayer) {
     if (aheadLayer == NULL || behindLayer == NULL) return NULL;
 
     //Validate that aheadLayer and behindLayer have the correct dimensions.
