@@ -285,23 +285,23 @@ void derivative_first_round(void) {
                             acnfl_generateApx(5, 2),
                        };
     acnfl_GenericFunctionResult derivativeA = 
-        acnfl_derivative_default(&locationA, 1, 0, 15, x_squared), 
+        acnfl_derivative_default(&locationA, 1, 0,  x_squared), 
                                 derivativeB =
-        acnfl_derivative_default(&locationB, 1, 0, 20, randomPolynomial),
+        acnfl_derivative_default(&locationB, 1, 0,  randomPolynomial),
                                 derivativeC = 
-        acnfl_derivative_default(locationC, 2, 1, 20, multipleInputs),
+        acnfl_derivative_default(locationC, 2, 1,  multipleInputs),
                                 derivativeD_1 = 
-        acnfl_derivative_default(locationD, 3, 0, 20, multipleInputs2),
+        acnfl_derivative_default(locationD, 3, 0,  multipleInputs2),
                                 derivativeD_2 = 
-        acnfl_derivative_default(locationD, 3, 1, 20, multipleInputs2),
+        acnfl_derivative_default(locationD, 3, 1,  multipleInputs2),
                                 derivativeD_3 = 
-        acnfl_derivative_default(locationD, 3, 2, 20, multipleInputs2),
+        acnfl_derivative_default(locationD, 3, 2,  multipleInputs2),
                                 derivativeE_1 = 
-        acnfl_derivative_default(locationE, 4, 2, 20, summation_function),
+        acnfl_derivative_default(locationE, 4, 2,  summation_function),
                                 derivativeE_2 = 
-        acnfl_derivative_default(locationE, 4, 3, 20, summation_function),
+        acnfl_derivative_default(locationE, 4, 3,  summation_function),
                             derivativeF =
-        acnfl_derivative_default(locationC, 2, 1, 20, multipleOutputs);
+        acnfl_derivative_default(locationC, 2, 1,  multipleOutputs);
 
         
 
