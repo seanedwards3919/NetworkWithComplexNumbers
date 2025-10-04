@@ -245,3 +245,91 @@ acnfl_NumberObject* neuronLayer_linearCombinationCaluclate(neuronLayer_RegularLa
 
 }
 
+/**********************
+ * Calculates the error based on 
+ * the output of a neural network
+ * and the intended results.
+ * @param outputLayer The final layer in a regular neural network.
+ * @param intendedResult The "correct" result of the inputs from the training data
+ * @param costFunction A pointer to a cost function used to evaluate the differecen between the outputLayer and intendedResult. A cost function, generally, should satisfy two conditions: 
+ - It should be able to take in an arbitrary number of inputs, as long as that number is even. For a neural network that outputs n results, inputs 1..n to the function should be the actual results from the neural network, and inputs n+1..2n are the intended results of the neural network. The function should essentially take the first half of the inputs as the actual outputs of the neural network and the second half as the intended output of the neural network. The function should reject any calls with an odd number of functions.
+ - It should return one output.
+ TODO: MAKE SURE THIS WORKS. TESTING
+ Costfunctions that don't satisfy these requirements may cause behavior or results you did not intend.
+ 
+ * @returns A pointer to an array of acnfl_NumberObjects of length outputLayer.OUTPUTVECTOR_LENGTH. Dynamically allocated, so remember to clean up. Returns NULL if error occurs.
+ **********************/
+ acnfl_NumberObject* neuronLayer_calculateOutputError(
+    neuronLayer_RegularLayer outputLayer,
+    layers_DataSetObject intendedResult,
+    acnfl_GenericFunctionDefinition costFunction
+ ) {
+    acnfl_NumberObject *toReturn;
+    //Type of dataSetObject check...
+    if (intendedResult.dataSetType == LAYERS_DATASET_SINGULAR) { 
+        #define intendedResultAsSingular ((layers_DataSetSingular*)intendedResult.dataSet)
+        //Make sure outputLayer.output and intendedResult are the same length
+        if ((outputLayer.OUTPUTVECTOR_LENGTH == intendedResultAsSingular->length) == outputLayer.WEIGHTEDINPUT_LENGTH ) {
+             toReturn = malloc(sizeof(acnfl_NumberObject)*outputLayer.OUTPUTVECTOR_LENGTH);
+             if (toReturn == NULL) return toReturn;
+            {
+                acnfl_NumberObject combinedList[
+                    outputLayer.WEIGHTEDINPUT_LENGTH +
+                    outputLayer.OUTPUTVECTOR_LENGTH
+                ];
+                long long index =0;
+                for (;
+                     index < outputLayer.WEIGHTEDINPUT_LENGTH;
+                     index++) {
+                        combinedList[index]=outputLayer.weightedInput_pointer[index];
+                }
+                for (long long loopIndex; 
+                     loopIndex < (outputLayer.OUTPUTVECTOR_LENGTH);
+                     loopIndex++, index++){
+                    combinedList[index]=outputLayer.outputVector_pointer[loopIndex];
+                 }
+
+
+                for (long long int index = 0;
+                index < outputLayer.OUTPUTVECTOR_LENGTH; 
+                index++){
+                    // d_i ← f(a_i)
+                    acnfl_GenericFunctionResult activationfunction_derivative = acnfl_derivative_default(
+                        combinedList + index,
+                        1, 1,  
+                        outputLayer.activationFunction_pointer
+                    ); /**  TODO: Change  to general acnfl_derivative function and add ways to adjust parameters globally.*/
+                    // r_i = derivative of activation function by paramteter index
+                    acnfl_GenericFunctionResult costfunction_derivative = acnfl_derivative_default(
+                        combinedList,
+                        outputLayer.WEIGHTEDINPUT_LENGTH + outputLayer.OUTPUTVECTOR_LENGTH,
+                        index,
+                        costFunction
+                    ); /** TODO: Same as above, but also, given how most of the derivative results for activationFunction_derivative might be calculating the same things over and over, it's worth looking into this as a potential optimization route, if things come to that. */
+
+                    // r_1 ← derivative of cost function * derivative of activation function
+                    toReturn[index] = acnfl_multiply(activationfunction_derivative.results[0], costfunction_derivative.results[0]);
+
+                    // Clean up memory for d_i
+                    acnfl_freeHeldResults(&activationfunction_derivative);
+
+                    // Clean up memory for r_i 
+                    acnfl_freeHeldResults(&costfunction_derivative);
+                }
+                
+            }
+        } else {
+            #ifdef REPORTING_3 
+                printf("The outputLayer.output and intendedResult are not the same length: %d!=%d.", outputLayer.OUTPUTVECTOR_LENGTH, intendedResultAsSingular->length);
+            #endif
+            return NULL;
+            
+        }
+    } else {
+        #ifdef REPORTING_3 
+            printf("Type of intendedResult is not specified. Type is %d.", intendedResult.dataSetType);
+        #endif
+        return NULL;
+    }
+    return toReturn;
+ }
