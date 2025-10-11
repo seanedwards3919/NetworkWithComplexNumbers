@@ -161,6 +161,84 @@ acnfl_NumberObject* neuronLayer_linearCombinationCaluclate(neuronLayer_RegularLa
 
 }
 
+/**
+ * Feeds forward the results from one layer to the next in a neural network
+ * @param neuronLayer_back Neuron layer that will be "feeding forward" into the next layer. The results for this layer should be calculated already
+ * @param neuronLayer_forward Neuron layer that will be fed into. The weight matrix and bias vector should be initialized for this vector
+ * @returns 0 if all good, 1 if did not complete, 2 if completed with error.
+ */
+ int layers_feedForward (neuronLayer_RegularLayer *neuronLayer_back,
+    neuronLayer_RegularLayer *neuronLayer_forward) {
+        //Calculate linear combinations 
+        // Apply activation function to weighted combinations
+        {
+            acnfl_NumberObject *combinations = neuronLayer_linearCombinationCaluclate(neuronLayer_back, neuronLayer_forward);
+            if (combinations == NULL) {
+                return 1;
+            }
+            for (long long i = 0; 
+                 i < neuronLayer_forward->WEIGHTEDINPUT_LENGTH;
+                 i++) {
+                    // Apply linear combination
+                    (neuronLayer_forward->weightedInput_pointer)[i] = combinations[i];
+                    // Apply activation function  
+                    acnfl_GenericFunctionResult activationResult = neuronLayer_forward->activationFunction_pointer(1, ((neuronLayer_forward->weightedInput_pointer)+i));
+
+                    (neuronLayer_forward->outputVector_pointer)[i]= activationResult.results[0];
+                    ;
+                    acnfl_freeHeldResults(&activationResult);
+                 } 
+            free(combinations);
+        }
+        return 0; 
+    }
+
+/**
+ * Feeds forward the results for each layer in the neural network.
+ * @param networkLayers Pointer to a list of network layers 
+ * @param networkLayersLength How long networkLayers is 
+ * @param inputdata Input data to the neural network
+ * @return 0 if all good, 1 if couldn't complete operation, 2 if completed with errors
+ **/
+int layers_feedForwardNetwork(
+    neuronLayer_RegularLayer *networkLayers,
+    long long int networkLayersLength,
+    layers_DataSetObject inputdata
+) {
+    if (networkLayersLength < 1) return 2;
+    if (inputdata.dataSetType == LAYERS_DATASET_SINGULAR) {
+        layers_DataSetSingular *redfinedInputdata = (layers_DataSetSingular*) inputdata.dataSet;
+    //Hook up inputData to the neural network.
+        neuronLayer_RegularLayer mockLayer = {
+            .OUTPUTVECTOR_LENGTH = redfinedInputdata->length,
+            .outputVector_pointer = redfinedInputdata->dataList
+        };
+        int result = layers_feedForward(&mockLayer, networkLayers);
+        if (result == 1) return result;
+    // Do mock first 
+    } else {
+        #ifdef REPORTING_3
+            printf("FEEDFORWARD NETWORK: NOT COMPATABLE DATASET TYPE: %d", inputdata.dataSetType);
+        #endif
+        return 1;
+    }
+    //Go through loop 
+    for (long long int i = 0; 0 < (networkLayersLength-1); i++) {
+        int result = layers_feedForward(networkLayers+i, networkLayers+i+1);
+        if (result == 1) return result;
+    }
+
+    
+    return 0;
+}
+
+/************************************************
+ * 
+ * FEEDFORWARD (RegularLayer)
+ *
+ ************************************************/
+
+
 /**********************
  * Calculates the error based on 
  * the output of a neural network
@@ -250,4 +328,12 @@ acnfl_NumberObject* neuronLayer_linearCombinationCaluclate(neuronLayer_RegularLa
     return toReturn;
  }
 
- 
+ /**
+ *Doesn't exist yet!
+ **/
+ acnfl_NumberObject* neuronLayer_calculateHiddenError(
+    neuronLayer_RegularLayer layer_ahead,
+    neuronLayer_RegularLayer layer_behind
+ ){
+
+ };

@@ -104,9 +104,19 @@ int neuronLayer_initialize(neuronLayer_RegularLayer *toBeInitialized) ;
 int neuronLayer_configure(neuronLayer_RegularLayer *toBeConfigured, long long int columns, long long int rows) ;
 int  neuronLayer_destroy(neuronLayer_RegularLayer *toBeDestroyed);
 
+int layers_feedForward (neuronLayer_RegularLayer *neuronLayer_back,
+    neuronLayer_RegularLayer *neuronLayer_forward) ;
+  int layers_feedForwardNetwork(
+    neuronLayer_RegularLayer *networkLayers,
+    long long int networkLayersLength,
+    layers_DataSetObject inputdata
+);
+
 acnfl_NumberObject* neuronLayer_linearCombinationCaluclate(neuronLayer_RegularLayer *behindLayer, neuronLayer_RegularLayer *aheadLayer) ;
  acnfl_NumberObject* neuronLayer_calculateOutputError(
     neuronLayer_RegularLayer outputLayer,
     layers_DataSetObject intendedResult,
     acnfl_GenericFunctionDefinition costFunction);
+
+    
 #endif
