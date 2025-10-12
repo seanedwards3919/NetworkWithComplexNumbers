@@ -161,3 +161,14 @@ int layers_dataSetSingular_pushListOfDataPoints(acnfl_NumberObject *dataPoints, 
   return 0;
 }
 
+/**
+ * Frees all the memory taken up by a DataSetSingular object.
+ * @param toBeDestroyed Pointer to a DataSetSingular object 
+ * to be deallocated.
+ * @return Error code. If this is zero, the operation executed succesfully
+ */
+int layers_dataSetSingular_destroyObject(layers_DataSetSingular *toBeDestroyed) {
+  if (toBeDestroyed->dataList == NULL) return 0;
+  free(toBeDestroyed->dataList);
+  return 0;
+}
