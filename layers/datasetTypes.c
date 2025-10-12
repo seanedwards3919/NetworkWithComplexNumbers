@@ -23,6 +23,7 @@ int layers_generic_objectDestroy(layers_DataSetObject *object) {
   switch (object->dataSetType) {
     case LAYERS_DATASET_SINGULAR:
       layers_dataSetSingular_destroyObject(object->dataSet);
+      if (!(object->dataSet)) return 1; 
       free(object->dataSet);
       object->dataSet = NULL;
       break;

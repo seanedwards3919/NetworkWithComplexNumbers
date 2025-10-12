@@ -169,6 +169,9 @@ acnfl_NumberObject* neuronLayer_linearCombinationCaluclate(neuronLayer_RegularLa
  */
  int layers_feedForward (neuronLayer_RegularLayer *neuronLayer_back,
     neuronLayer_RegularLayer *neuronLayer_forward) {
+        if ((neuronLayer_back==NULL) || (neuronLayer_forward==NULL)) {
+            return 1;
+        }
         //Calculate linear combinations 
         // Apply activation function to weighted combinations
         {
@@ -182,11 +185,15 @@ acnfl_NumberObject* neuronLayer_linearCombinationCaluclate(neuronLayer_RegularLa
                     // Apply linear combination
                     (neuronLayer_forward->weightedInput_pointer)[i] = combinations[i];
                     // Apply activation function  
-                    acnfl_GenericFunctionResult activationResult = neuronLayer_forward->activationFunction_pointer(1, ((neuronLayer_forward->weightedInput_pointer)+i));
-
+                    acnfl_GenericFunctionResult activationResult = {.0, NULL}; 
+                    if (neuronLayer_forward->activationFunction_pointer) {
+                    activationResult = neuronLayer_forward->activationFunction_pointer(1, ((neuronLayer_forward->weightedInput_pointer)+i));}
+                    
+                    if (activationResult.results) {
                     (neuronLayer_forward->outputVector_pointer)[i]= activationResult.results[0];
                     ;
                     acnfl_freeHeldResults(&activationResult);
+                    }
                  } 
             free(combinations);
         }
