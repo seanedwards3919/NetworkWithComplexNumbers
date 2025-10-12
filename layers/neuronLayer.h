@@ -112,6 +112,8 @@ int layers_feedForward (neuronLayer_RegularLayer *neuronLayer_back,
     layers_DataSetObject inputdata
 );
 
+void neuronLayer_regularLayer_zeroOut(neuronLayer_RegularLayer zeroOutTarget);
+
 acnfl_NumberObject* neuronLayer_linearCombinationCaluclate(neuronLayer_RegularLayer *behindLayer, neuronLayer_RegularLayer *aheadLayer) ;
  acnfl_NumberObject* neuronLayer_calculateOutputError(
     neuronLayer_RegularLayer outputLayer,

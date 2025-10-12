@@ -103,8 +103,32 @@ int  neuronLayer_destroy(neuronLayer_RegularLayer *toBeDestroyed) {
     toBeDestroyed->weightMatrix_rows=0;
 
     return 0;
-};
-
+}
+/**
+ * Sets all values to a valid zero value for the regularLayer object.
+ **/
+void neuronLayer_regularLayer_zeroOut(neuronLayer_RegularLayer zeroOutTarget) {
+    if (zeroOutTarget.weightMatrix_pointer!=NULL) {
+        for (long long i = 0; i < (zeroOutTarget.weightMatrix_columns*zeroOutTarget.weightMatrix_rows); i++) {
+            zeroOutTarget.weightMatrix_pointer[i]=acnfl_generateApx(0, 0);
+        }
+    }
+    if (zeroOutTarget.biasVector_pointer!=NULL) {
+        for (long long i = 0; i < (zeroOutTarget.BIASVECTOR_LENGTH); i++) {
+            zeroOutTarget.biasVector_pointer[i]=acnfl_generateApx(0, 0);
+        }
+    }
+    if (zeroOutTarget.outputVector_pointer!=NULL) {
+        for (long long i = 0; i < (zeroOutTarget.OUTPUTVECTOR_LENGTH); i++) {
+            zeroOutTarget.outputVector_pointer[i]=acnfl_generateApx(0, 0);
+        }
+    }
+    if (zeroOutTarget.weightedInput_pointer!=NULL) {
+        for (long long i = 0; i < (zeroOutTarget.WEIGHTEDINPUT_LENGTH); i++) {
+            zeroOutTarget.weightMatrix_pointer[i]=acnfl_generateApx(0, 0);
+        }
+    }
+}
 
 
 /************************************************
