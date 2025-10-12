@@ -164,7 +164,7 @@ acnfl_NumberObject* neuronLayer_linearCombinationCaluclate(neuronLayer_RegularLa
     for (long long int weightMatrix_rowIndex = 0; weightMatrix_rowIndex < aheadLayer->weightMatrix_rows; weightMatrix_rowIndex ++) {
         acnfl_NumberObject elementTotal = acnfl_generateApx(0, 0); 
         for (long long int outputVector_elementIndex = 0; outputVector_elementIndex < behindLayer->OUTPUTVECTOR_LENGTH; outputVector_elementIndex ++) {
-            acnfl_add(elementTotal, 
+            elementTotal = acnfl_add(elementTotal, 
                       acnfl_multiply(
                             neuronLayer_matrix_elementSelect(aheadLayer->weightMatrix_pointer, aheadLayer->weightMatrix_columns, weightMatrix_rowIndex, outputVector_elementIndex),
                           behindLayer->outputVector_pointer[outputVector_elementIndex]
@@ -176,7 +176,7 @@ acnfl_NumberObject* neuronLayer_linearCombinationCaluclate(neuronLayer_RegularLa
 
     // Calculate value of the prior product plus bias vector.
     for (long long int biasVector_index = 0; biasVector_index < aheadLayer->BIASVECTOR_LENGTH; biasVector_index++) {
-        acnfl_add(linearCombination[biasVector_index], 
+        linearCombination[biasVector_index]= acnfl_add(linearCombination[biasVector_index], 
                     aheadLayer->biasVector_pointer[biasVector_index]);
     }
 
@@ -308,7 +308,7 @@ int layers_feedForwardNetwork(
                      index++) {
                         combinedList[index]=outputLayer.weightedInput_pointer[index];
                 }
-                for (long long loopIndex; 
+                for (long long loopIndex =0; 
                      loopIndex < (outputLayer.OUTPUTVECTOR_LENGTH);
                      loopIndex++, index++){
                     combinedList[index]=outputLayer.outputVector_pointer[loopIndex];
