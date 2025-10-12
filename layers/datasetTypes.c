@@ -37,7 +37,7 @@ int layers_generic_objectDestroy(layers_DataSetObject *object) {
   }
   return 0;
 }
- 
+
 
 
 
@@ -60,7 +60,7 @@ int layers_dataSetSingular_initializeMemory(layers_DataSetSingular *object) {
 
   return 0;
 }
-;
+
 /**
  * Frees all the memory taken up by a DataSetSingular object, 
  * but not the DataSetSingular object itself.
@@ -80,7 +80,7 @@ int layers_dataSetSingular_deinitializeObject(layers_DataSetSingular *toBeDestro
 
   return  0;
 
-};
+}
 /**
  * Puts a new NumberObject into a DataSetSingular object.
  *
@@ -124,7 +124,7 @@ int layers_dataSetSingular_pushDataPoint(acnfl_NumberObject dataPoint, layers_Da
     dataSet->length ++;
 
     return 0;
-};
+}
 
 /**
  * Pushes multiple NumberObjects into a DataSetSingular object

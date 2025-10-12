@@ -17,8 +17,7 @@
 
 
 /** TEST FILES */
-#include "derivatives_test.c"
-#include "approx_tests.c"
+#include "tests.h"
 
 CU_TestInfo tests_appx_db[] = {
     {"Equality_inequality", test_appx_equality_inequality},
@@ -33,9 +32,15 @@ CU_TestInfo derivatives_db[] = {
     CU_TEST_INFO_NULL
 };
 
+CU_TestInfo neuronlayer_tests_db[] = {
+    {"Feedforward tests", outputErrorTests_A},
+    CU_TEST_INFO_NULL
+};
+
 CU_SuiteInfo suite_db[] = {
     {"Approximate number tests", 0, 0, 0, 0, tests_appx_db},
     {"Derivative tests", 0,0,0,0 ,derivatives_db},
+    {"Neuron layer tests", 0, 0, neuronLayer_setupTests, neuronLayer_teardownTests, neuronlayer_tests_db},
     CU_SUITE_INFO_NULL,
 };
 
@@ -56,7 +61,6 @@ CU_ErrorCode test_HeadProcess(void) {
     //CU_console_run_tests();
     
 
-    ending:
     CU_ErrorCode toReturn = CU_get_error();
     CU_cleanup_registry();
     return toReturn;

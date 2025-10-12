@@ -77,7 +77,7 @@ void test_appx_equality_inequality(void) {
 }
 
 void test_appx_addition(void){
-    acnfl_NumberObject a = acnfl_generateApx(NAN, 0),
+    acnfl_NumberObject //a = acnfl_generateApx(NAN, 0), ///TODO: Write tests using NAN
                        b = acnfl_generateApx(5, 5),
                        c = acnfl_generateApx(10, 10),
                        d = acnfl_generateApx(-5, 5),

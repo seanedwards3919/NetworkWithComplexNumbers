@@ -10,6 +10,7 @@
 #include "datasetTypes.h"
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include <time.h>
 
 /************************************************
@@ -39,7 +40,7 @@ int neuronLayer_initialize(neuronLayer_RegularLayer *toBeInitialized) {
     toBeInitialized->weightMatrix_rows = 0;
 
     return 0;
-};
+}
 
 
 ///TODO:   FIGURE OUT WHAT PARAMETERS THIS FUNCTION ACTUALLY NEEDS
@@ -58,8 +59,7 @@ int neuronLayer_configure(neuronLayer_RegularLayer *toBeConfigured, long long in
     toBeConfigured->weightMatrix_pointer = malloc(sizeof(acnfl_NumberObject) * columns * rows);
     if (toBeConfigured->weightMatrix_pointer == NULL) {
         return 1;
-    }
-
+    } 
     toBeConfigured->weightedInput_pointer = malloc(sizeof(acnfl_NumberObject) * toBeConfigured->WEIGHTEDINPUT_LENGTH);
     if (toBeConfigured->weightedInput_pointer == NULL) {
         return 1;
@@ -77,7 +77,7 @@ int neuronLayer_configure(neuronLayer_RegularLayer *toBeConfigured, long long in
 
 
     return 0;
-}; 
+} 
 
 /**
  * Deallocates memory for all pointers inside
@@ -327,13 +327,3 @@ int layers_feedForwardNetwork(
     }
     return toReturn;
  }
-
- /**
- *Doesn't exist yet!
- **/
- acnfl_NumberObject* neuronLayer_calculateHiddenError(
-    neuronLayer_RegularLayer layer_ahead,
-    neuronLayer_RegularLayer layer_behind
- ){
-
- };

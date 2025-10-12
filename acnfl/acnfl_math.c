@@ -102,7 +102,7 @@ void acnfl_checkComplexity(acnfl_NumberObject *number, bool *errorFlag) {
  * Dumps memory for acnfl_NumberObject.
  */
     void acnfl_errorReporting(acnfl_NumberObject *a) {
-        printf("Dumping memory of number at %p.\n", a);
+        printf("Dumping memory of number at %p.\n", (void*)a);
         printf("Parameters: nType %c, vType %c \n", a->nType, a->vType);
         printf("Memory dump:. ");
         
@@ -145,12 +145,13 @@ void acnfl_checkComplexity(acnfl_NumberObject *number, bool *errorFlag) {
 void acnfl_unaryOperationCheck(acnfl_NumberObject *a, acnfl_NumberObject *returnValue, 
     bool *errorFlag) {
     // Check for error.
+    /// TODO: GCC says returnValue ends up unused here...
     char err = 'c';//acnfl_errorHandling(a); 
     ///TODO: Calling acnfl_errorHandling here was causing an error for some reason? What?
     // Return error results if there is a error
     if (err != 'c') {
         #ifdef REPORTING_3
-            printf("Error code %c reported!\n", err);
+            printf("Error code %c reported! at %p\n", err, (void*) returnValue);
         #endif
         (*errorFlag)  = true;
         return;
@@ -225,7 +226,7 @@ acnfl_NumberObject acnfl_binaryOperationCommon(acnfl_NumberObject a, acnfl_Numbe
             #ifdef REPORTING_3
             printf("returnValue and result have different vType. result will overwrite returnValue"
              "\n returnvalue %c, result %c\n Function at %p", returnValue.vType, result.vType, 
-             (functionList[0]));
+             (void*)&(functionList[0]));
              acnfl_errorReporting(&a);
              acnfl_errorReporting(&b);
 
@@ -517,9 +518,8 @@ float acnfl_defaultComparison(acnfl_NumberObject a, acnfl_NumberObject b,
             #endif
         }
 
-        ending: 
         return returnValue;
-    }; 
+    } 
 
 /**
  * This is the top-level comparison function for acnfl_NumberObjects. 
@@ -542,7 +542,7 @@ float acnfl_comparison(acnfl_NumberObject a, acnfl_NumberObject b,
         return acnfl_defaultComparison(a, b, 
             *((acnfl_defaultComparisonInformation*) extraData));
         
-        };
+        }
 
 /****************************************************************************8
  * DATA MANAGEMENT
