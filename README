@@ -1,1 +1,5 @@
-Readme PLACEHOLDER
+This is a C program (and hopefully a library eventually) that allows a user to create and run a neural network for numerical data. It is written in C, and uniquely, it supports complex numbers to be used in calculations and data. 
+
+This is not meant for professional use. It is currently non-functional, and is a work in progress.
+
+This software is licensed under the 3-clause BSD License (see LICENSE). 
