@@ -8,7 +8,7 @@
 #include "../layers/neuronLayer.h"
 #include "../layers/datasetTypes.h"
 
-#define REGULARLAYER_NUMBER 4
+#define REGULARLAYER_NUMBER 5
 neuronLayer_RegularLayer neuronLayers[REGULARLAYER_NUMBER];
 #define DATASETOBJECT_NUMBER 1
 layers_DataSetObject datasets[DATASETOBJECT_NUMBER];
@@ -68,8 +68,27 @@ void neuronLayer_setupTests(void) {
     neuronLayer_matrix_elementSelect(neuronLayers[3].weightMatrix_pointer, neuronLayers[3].weightMatrix_columns, 1, 0) = acnfl_generateApx(0, 0);
     neuronLayer_matrix_elementSelect(neuronLayers[3].weightMatrix_pointer, neuronLayers[3].weightMatrix_columns, 1, 1) = acnfl_generateApx(1, 0);
 
+    //Network five!!!!
+    initializeNeuronLayerObject(4, 2, 4, giveHalf);
+    neuronLayer_matrix_elementSelect(neuronLayers[4].weightMatrix_pointer, neuronLayers[4].weightMatrix_columns,
+                                        0, 0) = acnfl_generateApx(2, 0);
+    neuronLayer_matrix_elementSelect(neuronLayers[4].weightMatrix_pointer, neuronLayers[4].weightMatrix_columns,
+                                        0, 1) = acnfl_generateApx(5, 0);
+                                        
+    neuronLayer_matrix_elementSelect(neuronLayers[4].weightMatrix_pointer, neuronLayers[4].weightMatrix_columns,
+                                        1, 0) = acnfl_generateApx(1, 0);
+    neuronLayer_matrix_elementSelect(neuronLayers[4].weightMatrix_pointer, neuronLayers[4].weightMatrix_columns,
+                                        1, 1) = acnfl_generateApx(-0.5, 0);
 
+    neuronLayer_matrix_elementSelect(neuronLayers[4].weightMatrix_pointer, neuronLayers[4].weightMatrix_columns,
+                                        2, 0) = acnfl_generateApx(6, 0);
+    neuronLayer_matrix_elementSelect(neuronLayers[4].weightMatrix_pointer, neuronLayers[4].weightMatrix_columns,
+                                        2, 1) = acnfl_generateApx(2, 0);
 
+    neuronLayer_matrix_elementSelect(neuronLayers[4].weightMatrix_pointer, neuronLayers[4].weightMatrix_columns,
+                                        3, 0) = acnfl_generateApx(7, 0);
+    neuronLayer_matrix_elementSelect(neuronLayers[4].weightMatrix_pointer, neuronLayers[4].weightMatrix_columns,
+                                        3, 1) = acnfl_generateApx(10, 0);
     // DATASET ONE !!!
     datasets[0].dataSetType = LAYERS_DATASET_SINGULAR;
     datasets[0].dataSet = datasetsSingular+0;
@@ -91,7 +110,7 @@ void neuronLayer_teardownTests(void) {
 void outputErrorTests_A(void) {
     
     printf("Beginning neuronlayer tests A.");
-    layers_feedForwardNetwork(neuronLayers+0, 4, datasets[0]);
+    layers_feedForwardNetwork(neuronLayers+0, 5, datasets[0]);
     // Set up needed variables
 
     //Network one results
@@ -105,10 +124,14 @@ void outputErrorTests_A(void) {
     //Network three
     ACNFL_testing_equal(neuronLayers[2].outputVector_pointer[0],acnfl_generateApx(6, 0));
     ACNFL_testing_equal(neuronLayers[2].outputVector_pointer[1],acnfl_generateApx(-4, 0));
-    //Network
+    //Network four 
     ACNFL_testing_equal(neuronLayers[3].outputVector_pointer[0],acnfl_generateApx(-6, 0));
     ACNFL_testing_equal(neuronLayers[3].outputVector_pointer[1],acnfl_generateApx(4, 0));
-    
+    //Network five
+    ACNFL_testing_equal(neuronLayers[4].outputVector_pointer[0],acnfl_generateApx(4, 0));
+    ACNFL_testing_equal(neuronLayers[4].outputVector_pointer[1],acnfl_generateApx(-4, 0));
+    ACNFL_testing_equal(neuronLayers[4].outputVector_pointer[2],acnfl_generateApx(14, 0));
+    ACNFL_testing_equal(neuronLayers[4].outputVector_pointer[3],acnfl_generateApx(-1, 0));
 
     return;
 }
