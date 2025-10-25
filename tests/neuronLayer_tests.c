@@ -37,7 +37,7 @@ void neuronLayer_setupTests(void) {
     #define initializeNeuronLayerObject(location, columns, rows, pointer) neuronLayer_initialize(neuronLayers+location); \
     neuronLayer_configure(neuronLayers+location, columns, rows); \
     neuronLayer_regularLayer_zeroOut(neuronLayers[location]); \
-    neuronLayers[0].activationFunction_pointer = pointer
+    neuronLayers[location].activationFunction_pointer = pointer
 
     printf("Beginning neuronlayer tests.");
     // NETWORK ONE!!! 
@@ -58,7 +58,7 @@ void neuronLayer_setupTests(void) {
     neuronLayer_matrix_elementSelect(neuronLayers[2].weightMatrix_pointer, neuronLayers[2].weightMatrix_columns, 0, 1) = acnfl_generateApx(0.25, 0);
     neuronLayer_matrix_elementSelect(neuronLayers[2].weightMatrix_pointer, neuronLayers[2].weightMatrix_columns, 0, 2) = acnfl_generateApx(0.25, 0);
     neuronLayer_matrix_elementSelect(neuronLayers[2].weightMatrix_pointer, neuronLayers[2].weightMatrix_columns, 1, 0) = acnfl_generateApx(-1, 0);
-    neuronLayer_matrix_elementSelect(neuronLayers[2].weightMatrix_pointer, neuronLayers[2].weightMatrix_columns, 1, 1) = acnfl_generateApx(1, 0);
+    neuronLayer_matrix_elementSelect(neuronLayers[2].weightMatrix_pointer, neuronLayers[2].weightMatrix_columns, 1, 1) = acnfl_generateApx(0.5, 0);
     neuronLayer_matrix_elementSelect(neuronLayers[2].weightMatrix_pointer, neuronLayers[2].weightMatrix_columns, 1, 2) = acnfl_generateApx(0, 0);
 
     //Network four!!!
@@ -103,11 +103,11 @@ void outputErrorTests_A(void) {
     ACNFL_testing_equal(neuronLayers[1].outputVector_pointer[1],acnfl_generateApx(8, 0));
     ACNFL_testing_equal(neuronLayers[1].outputVector_pointer[2],acnfl_generateApx(8, 0));
     //Network three
-    ACNFL_testing_equal(neuronLayers[2].outputVector_pointer[2],acnfl_generateApx(6, 0));
-    ACNFL_testing_equal(neuronLayers[2].outputVector_pointer[2],acnfl_generateApx(-4, 0));
+    ACNFL_testing_equal(neuronLayers[2].outputVector_pointer[0],acnfl_generateApx(6, 0));
+    ACNFL_testing_equal(neuronLayers[2].outputVector_pointer[1],acnfl_generateApx(-4, 0));
     //Network
-    ACNFL_testing_equal(neuronLayers[3].outputVector_pointer[2],acnfl_generateApx(-6, 0));
-    ACNFL_testing_equal(neuronLayers[3].outputVector_pointer[2],acnfl_generateApx(4, 0));
+    ACNFL_testing_equal(neuronLayers[3].outputVector_pointer[0],acnfl_generateApx(-6, 0));
+    ACNFL_testing_equal(neuronLayers[3].outputVector_pointer[1],acnfl_generateApx(4, 0));
     
 
     return;
