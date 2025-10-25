@@ -254,7 +254,7 @@ int layers_feedForwardNetwork(
         return 1;
     }
     //Go through loop 
-    for (long long int i = 0; 0 < (networkLayersLength-1); i++) {
+    for (long long int i = 0; i < (networkLayersLength-1); i++) {
         int result = layers_feedForward(networkLayers+i, networkLayers+i+1);
         if (result == 1) return result;
     }
