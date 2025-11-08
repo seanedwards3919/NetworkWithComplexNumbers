@@ -265,7 +265,7 @@ int layers_feedForwardNetwork(
 
 /************************************************
  * 
- * FEEDFORWARD (RegularLayer)
+ * BACKPROPOGATION (RegularLayer)
  *
  ************************************************/
 
