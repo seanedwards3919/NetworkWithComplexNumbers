@@ -75,6 +75,11 @@ typedef struct neuronLayer_regularLayer {
     /** The length of the output vector is the same as the number of rows in the weight matrix. */
     #define OUTPUTVECTOR_LENGTH weightMatrix_rows
 
+    //Error vectors
+    acnfl_NumberObject *errorVector_pointer;
+    /** the length of the error vector is the same as  the number of rows in the weight matrix. */
+    #define ERRORVECTOR_LENGTH weightMatrix_rows
+
     //Activation function
     acnfl_GenericFunctionDefinition activationFunction_pointer;
 

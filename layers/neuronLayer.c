@@ -35,6 +35,9 @@ int neuronLayer_initialize(neuronLayer_RegularLayer *toBeInitialized) {
     toBeInitialized->weightMatrix_pointer = NULL;
     toBeInitialized->weightedInput_pointer = NULL;
     toBeInitialized->outputVector_pointer = NULL;
+    toBeInitialized->errorVector_pointer = NULL;
+    
+    toBeInitialized->activationFunction_pointer = NULL;
 
     toBeInitialized->weightMatrix_columns = 0;
     toBeInitialized->weightMatrix_rows = 0;
@@ -56,6 +59,10 @@ int neuronLayer_configure(neuronLayer_RegularLayer *toBeConfigured, long long in
     toBeConfigured->weightMatrix_columns = columns;
     toBeConfigured->weightMatrix_rows = rows;
 
+    toBeConfigured->biasVector_pointer = malloc(sizeof(acnfl_NumberObject) * toBeConfigured->BIASVECTOR_LENGTH);
+    if (toBeConfigured->biasVector_pointer == NULL) {
+        return 1;
+    }
     toBeConfigured->weightMatrix_pointer = malloc(sizeof(acnfl_NumberObject) * columns * rows);
     if (toBeConfigured->weightMatrix_pointer == NULL) {
         return 1;
@@ -64,14 +71,12 @@ int neuronLayer_configure(neuronLayer_RegularLayer *toBeConfigured, long long in
     if (toBeConfigured->weightedInput_pointer == NULL) {
         return 1;
     }
-
-    toBeConfigured->biasVector_pointer = malloc(sizeof(acnfl_NumberObject) * toBeConfigured->BIASVECTOR_LENGTH);
-    if (toBeConfigured->biasVector_pointer == NULL) {
-        return 1;
-    }
-
     toBeConfigured->outputVector_pointer = malloc(sizeof(acnfl_NumberObject) * toBeConfigured->OUTPUTVECTOR_LENGTH );
     if (toBeConfigured->outputVector_pointer == NULL) {
+        return 1;
+    }
+    toBeConfigured->errorVector_pointer = malloc(sizeof(acnfl_NumberObject) * toBeConfigured->ERRORVECTOR_LENGTH);
+    if (toBeConfigured->errorVector_pointer == NULL) {
         return 1;
     }
 
@@ -88,16 +93,31 @@ int neuronLayer_configure(neuronLayer_RegularLayer *toBeConfigured, long long in
  * @returns Error code. 0 is normal
  **/
 int  neuronLayer_destroy(neuronLayer_RegularLayer *toBeDestroyed) {
+
+    if (toBeDestroyed->biasVector_pointer != NULL){
     free(toBeDestroyed->biasVector_pointer);
-    free(toBeDestroyed->weightedInput_pointer);
+    (toBeDestroyed->biasVector_pointer) = NULL;}
+
+    if (toBeDestroyed->weightMatrix_pointer!= NULL){
     free(toBeDestroyed->weightMatrix_pointer);
-    free(toBeDestroyed->outputVector_pointer);
+    (toBeDestroyed->weightMatrix_pointer) = NULL;}
 
     
-    (toBeDestroyed->biasVector_pointer) = NULL;
-    (toBeDestroyed->weightMatrix_pointer) = NULL;
-    (toBeDestroyed->weightedInput_pointer)= NULL;
-    (toBeDestroyed->outputVector_pointer) = NULL;
+    if (toBeDestroyed->weightedInput_pointer!= NULL){
+    free(toBeDestroyed->weightedInput_pointer);
+    (toBeDestroyed->weightedInput_pointer)= NULL;}
+
+    if (toBeDestroyed->outputVector_pointer!= NULL){
+    free(toBeDestroyed->outputVector_pointer);
+    (toBeDestroyed->outputVector_pointer)=NULL;}
+
+    if (toBeDestroyed->errorVector_pointer!= NULL){
+        free(toBeDestroyed->errorVector_pointer);
+        (toBeDestroyed->errorVector_pointer) = NULL;
+    }
+
+
+    
 
     toBeDestroyed->weightMatrix_columns=0;
     toBeDestroyed->weightMatrix_rows=0;
@@ -126,6 +146,11 @@ void neuronLayer_regularLayer_zeroOut(neuronLayer_RegularLayer zeroOutTarget) {
     if (zeroOutTarget.weightedInput_pointer!=NULL) {
         for (long long i = 0; i < (zeroOutTarget.WEIGHTEDINPUT_LENGTH); i++) {
             zeroOutTarget.weightMatrix_pointer[i]=acnfl_generateApx(0, 0);
+        }
+    }
+    if (zeroOutTarget.errorVector_pointer!=NULL) {
+        for (long long i = 0; i < (zeroOutTarget.ERRORVECTOR_LENGTH); i++) {
+            zeroOutTarget.errorVector_pointer[i]=acnfl_generateApx(0, 0);
         }
     }
 }
