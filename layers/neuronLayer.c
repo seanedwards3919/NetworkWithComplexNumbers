@@ -383,3 +383,65 @@ int layers_feedForwardNetwork(
     }
     return toReturn;
  }
+
+acnfl_NumberObject* neuronLayer_calculateHiddenError(neuronLayer_RegularLayer behindLayer, neuronLayer_RegularLayer forwardLayer) {
+    // For convenience :
+            // Transpose, so now number of rows is equal to number of columns
+    long long int lengthOfA = forwardLayer.weightMatrix_columns;
+    long long int lengthOfB = behindLayer.WEIGHTEDINPUT_LENGTH;
+    if (lengthOfA != lengthOfB) {
+        #ifdef REPORTING_3
+            printf("\nNumber of columns in forwardLayer.weightMatrix != number of rows in behindLayer.weightMatrix. Returning null\n");
+        #endif
+        return NULL;
+    }
+    long long int lengthOfC = lengthOfA;
+    long long int hiddenLayerAmount = lengthOfA+lengthOfB+lengthOfC;
+    acnfl_NumberObject* toReturn = malloc(sizeof(acnfl_NumberObject) * hiddenLayerAmount);
+    if (!toReturn) {
+        #ifdef REPORTING_3
+            printf("Couldn't allocate memory. Returning NULL\n");
+        #endif
+        return NULL;
+    }
+    
+    acnfl_NumberObject *startOfA = toReturn,
+                       *startOfB = toReturn+lengthOfA,
+                       *startOfC = startOfB+lengthOfB;
+    /** Calculate the product of (forwardLayer.weightMatrix)T * forwardLayer.errorVector = A */
+
+    {
+        acnfl_NumberObject sumHolder;
+        for (long long columnCounter = 0; columnCounter < forwardLayer.weightMatrix_columns; columnCounter ++) {
+            sumHolder = acnfl_generateApx(0, 0);
+            for (long long rowCounter = 0; rowCounter < forwardLayer.weightMatrix_rows; rowCounter++) {
+                sumHolder = acnfl_add(sumHolder,  acnfl_multiply(neuronLayer_matrix_elementSelect(forwardLayer.weightMatrix_pointer, forwardLayer.weightMatrix_columns, rowCounter, columnCounter), forwardLayer.errorVector_pointer[rowCounter]  ));
+            }
+            startOfA[columnCounter] = sumHolder;
+        }
+    }
+    /** Calculate the result of the derivative of behindLayer's activation function on each element of behindLayer.weightedInput = B */
+    {
+        for (long long behindLayerIndex = 0; behindLayerIndex < behindLayer.WEIGHTEDINPUT_LENGTH; behindLayerIndex++) {
+            acnfl_GenericFunctionResult results = acnfl_derivative_default((behindLayer.weightedInput_pointer+behindLayerIndex), 1, 0, behindLayer.activationFunction_pointer);
+            if (results.results == NULL) return NULL;
+            startOfB[behindLayerIndex] = results.results[0];
+            acnfl_freeHeldResults(&results);
+        }
+    }
+
+    /** for a1, a2 ... in A and b1, b2, ... in B get c_i = a_i * b_i*/
+    {
+        for (long long index = 0; index < lengthOfA; index++) {
+            startOfC[index] = acnfl_multiply(startOfA[index], startOfB[index]);
+        }
+        /// TODO: INCREDIBLY BAD WAY TO LAY OUT MEMORY
+        /// REDUCE SIZE OF MALLOC
+        for (long long index = 0; index < lengthOfA; index++) {
+            toReturn[index] = startOfC[index];
+        }
+    }
+
+    /** return */
+    return toReturn;
+}
