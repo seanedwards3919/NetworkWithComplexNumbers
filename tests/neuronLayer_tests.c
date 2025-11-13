@@ -32,6 +32,11 @@ acnfl_GenericFunctionResult giveInverse(long long parameterCount, acnfl_NumberOb
 }
 
 
+acnfl_GenericFunctionResult giveHalf(long long parameterCount, acnfl_NumberObject *parameterList) {
+    acnfl_function_preliminaryCheck(parameterCount, 0, parameterList, parameterCount);
+    for (int i = 0; i < parameterCount; i++) resultPointer[i]=acnfl_multiply(acnfl_generateApx(0.5, 0), parameterList[i]);
+    return toReturn;
+}
 
 void neuronLayer_setupTests(void) {
     #define initializeNeuronLayerObject(location, columns, rows, pointer) neuronLayer_initialize(neuronLayers+location); \
