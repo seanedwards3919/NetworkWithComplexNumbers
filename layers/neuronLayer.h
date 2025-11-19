@@ -54,7 +54,7 @@
  **/
 typedef struct neuronLayer_regularLayer {
 
-    //Weight matrix 
+    //Weight matrix in row-major order
     acnfl_NumberObject *weightMatrix_pointer;
     long long int weightMatrix_rows;
     long long int weightMatrix_columns;

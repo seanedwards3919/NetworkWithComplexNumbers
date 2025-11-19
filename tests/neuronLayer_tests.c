@@ -7,6 +7,7 @@
 
 #include "../layers/neuronLayer.h"
 #include "../layers/datasetTypes.h"
+#include "tests.h"
 
 #define REGULARLAYER_NUMBER 5
 neuronLayer_RegularLayer neuronLayers[REGULARLAYER_NUMBER];
@@ -139,4 +140,172 @@ void outputErrorTests_A(void) {
     ACNFL_testing_equal(neuronLayers[4].outputVector_pointer[3],acnfl_generateApx(-1, 0));
 
     return;
+}
+
+void calculateHiddenErrorTests_A(void) {
+    /**
+    * Test 1 
+    * 
+    * Activation function is just 
+    * f(x) = x^2
+    *
+    * Weighted inputs for backLayer are [1, 2]T, so derivative
+    * should be [2, 4]T
+    *
+    * forwardLayer weight matrix is 
+    *   [2, 3]
+    *   [4, 5]
+    * So transposed, it should be
+    *   [2, 4]
+    *   [3, 5]
+    * And the error for forwardLayer should be 
+    *   [-2, 0]T
+    * Therefore the matrix multiplication, wT * error should be 
+    *   [-4, -6]T
+    * Final product from the Hadamard product should be
+    *   [-8, -24]
+    **/
+
+    neuronLayer_RegularLayer 
+        backLayer = {
+            .weightedInput_pointer = (acnfl_NumberObject[])
+                {acnfl_generateApx(2, 0),
+                 acnfl_generateApx(4, 0)},
+            .WEIGHTEDINPUT_LENGTH = 2,
+            .activationFunction_pointer = x_squared
+        },
+        forwardLayer = {
+            .weightMatrix_pointer = (acnfl_NumberObject[])
+                {acnfl_generateApx(2, 0), acnfl_generateApx(3,0),
+                acnfl_generateApx(4, 0), acnfl_generateApx(5, 0)},
+            .weightMatrix_rows = 2,
+            .weightMatrix_columns = 2, 
+
+            .errorVector_pointer = (acnfl_NumberObject[])
+                {acnfl_generateApx(-2, 0),
+                 acnfl_generateApx(0, 0)},
+        };
+    acnfl_NumberObject intendedResult[] = 
+        {acnfl_generateApx(-8, 0),
+         acnfl_generateApx(-24, 0)};
+    int intendedResultLength = 2;
+
+    acnfl_NumberObject *result = neuronLayer_calculateHiddenError(backLayer, forwardLayer);
+    if(!result){
+        for (int i = 0; i < intendedResultLength; i++) {
+            ACNFL_testing_equal(result[i], intendedResult[i])
+        }
+        free(result);
+    }
+
+    /**
+    * Test 2 
+    *
+    * Activation function is just 
+    * f(x)= x*(-1), so all derivatives, are -1
+    * 
+    * Weighted inputs for backLayer are 3 long, and can be anything 
+    * but the derivative is always going to be [-1, -1, -1]T.
+    *
+    * forwardLayer weight matrix is
+    *  [1, -5, 9]
+    *  [-2, 6, -10]
+    *  [3, -7, 11]
+    *  [-4, 8, -12]
+    * 
+    * So transposed, it should be 
+    * [1, -2, 3, -4]
+    * [-5, 6, -7, 8]
+    * [9, -10, 11, -12]
+    *
+    * And the error for frwardLayer should be 
+    * [-1, -100, 20.5, 2]T
+    * 
+    * Therefore the matrix multiplication, wT * error should be 
+    * [252.5, -722.5, 1192.5]T
+    *
+    * And final product from the Hadamard product should be 
+    * [-252.5, 722.5, -1192.5]T
+    **/
+
+    /**
+ * Test 3
+ * 
+ * Activation function is just 
+ * f(x) = sqrt(x), so the derivative is f'(x) = 1 / (2 * sqrt(x))
+ * 
+ * Weighted inputs for backLayer are [4, 16, 25]T, so the derivatives
+ * should be [1/4, 1/8, 1/10]T, or approximately [0.25, 0.125, 0.1]T
+ * 
+ * forwardLayer weight matrix is
+ *   [0.5, -1.5, 2.5]
+ *   [-2.5, 3.5, -4.5]
+ * So transposed, it should be
+ *   [0.5, -2.5]
+ *   [-1.5, 3.5]
+ *   [2.5, -4.5]
+ * 
+ * And the error for forwardLayer should be
+ *   [1, -10]T
+ * 
+ * Therefore the matrix multiplication, wT * error should be
+ *   [25.5, -36.5, 47.5]
+ * 
+ * Final product from the Hadamard product should be
+ *   [6.375, -4.5625, 4.75]
+ **/
+
+ /**
+ * Test 4
+ * 
+ * Activation function is just 
+ * f(x) = log(x), so the derivative is f'(x) = 1/x
+ * 
+ * Weighted inputs for backLayer are [1, 10]T, so the derivatives
+ * should be [1/1, 1/10]T, or [1, 0.1]T
+ * 
+ * forwardLayer weight matrix is
+ *   [0.5, 1]
+ *   [1.5, 2]
+ * So transposed, it should be
+ *   [0.5, 1.5]
+ *   [1, 2]
+ * 
+ * And the error for forwardLayer should be
+ *   [2, 2]T
+ * 
+ * Therefore the matrix multiplication, wT * error should be
+ *   [0.5 * 2 + 1.5 * 2, 
+ *    1 * 2 + 2 * 2]T
+ *   = [1 + 3, 2 + 4]T
+ *   = [4, 6]T
+ * 
+ * Final product from the Hadamard product should be
+ *   [4 * 1, 6 * 0.1]T
+ *   = [4, 0.6]T
+ * 
+ * To make the final Hadamard product result equal to [2, 2]T, we need to
+ * scale the matrix multiplication result or modify the error vector accordingly.
+ **/
+
+ /**
+  * No. 5 
+  * Activation function is just f(x)= x^2, so derivative is 
+  * f'(x)=2x. So weighted inputs for BackLayer are [1+2i, 10-3i]T, 
+  * so derivatives should be [2+4i, 20-6i].
+
+  * Forwardlayer weight matrix is 
+ *   [0.5 + 1i, 1 - 2i]
+ *   [1.5 + 0.5i, 2 + 3i]
+ * So transposed, it should be
+ *   [0.5 + 1i, 1.5 + 0.5i]
+ *   [1 - 2i, 2 + 3i]
+   * 
+ * And the error for forwardLayer should be
+ *   [2 + 3i, -1 + 4i]T
+ * The matrix multiplication wT * error should be:
+ *   [-5.5+9i, -6+4i]
+ * Therefore the hadamard product is 
+ *   [-47-4i, -48+58i]
+  **/
 }

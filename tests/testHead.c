@@ -34,6 +34,7 @@ CU_TestInfo derivatives_db[] = {
 
 CU_TestInfo neuronlayer_tests_db[] = {
     {"Feedforward tests", outputErrorTests_A},
+    {"Hidden error tests", calculateHiddenErrorTests_A},
     CU_TEST_INFO_NULL
 };
 
