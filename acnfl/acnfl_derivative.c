@@ -91,7 +91,7 @@ acnfl_GenericFunctionResult acnfl_derivative(acnfl_NumberObject *locationToDiffe
         acnfl_NumberObject newLocationList[numberOfLocations];
         {
             // Get modified parameter
-            if (indexToDerive >= numberOfLocations) exit(1);
+            if ((indexToDerive >= numberOfLocations) || (indexToDerive < 0)) exit(1);
             acnfl_NumberObject modifiedParameter = acnfl_add(locationToDifferentiate[indexToDerive], delta);
             // Get new list with modified parameter
             for (int i = 0; i < numberOfLocations; i++) {
