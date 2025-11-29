@@ -2,12 +2,15 @@
 #include "../acnfl/acnfl_math.h"
 #include "../acnfl/acnfl_derivative.h"
 #include <bits/types/locale_t.h>
+#include <math.h>
+#include <stdio.h>
 #include <stdlib.h>
 #include "testHead.h"
 
 #include "../layers/neuronLayer.h"
 #include "../layers/datasetTypes.h"
 #include "tests.h"
+#include "math.h"
 
 #define REGULARLAYER_NUMBER 5
 neuronLayer_RegularLayer neuronLayers[REGULARLAYER_NUMBER];
@@ -38,6 +41,29 @@ acnfl_GenericFunctionResult giveHalf(long long parameterCount, acnfl_NumberObjec
     for (int i = 0; i < parameterCount; i++) resultPointer[i]=acnfl_multiply(acnfl_generateApx(0.5, 0), parameterList[i]);
     return toReturn;
 }
+#define modulus(number) sqrt((number.realNumberValue_apx*number.realNumberValue_apx)+(number.imaginaryNumberValue_apx*number.imaginaryNumberValue_apx) )
+acnfl_GenericFunctionResult element_squareroot(long long parameterCount, acnfl_NumberObject *parameterList) {
+    acnfl_function_preliminaryCheck(parameterCount, 0, parameterList, parameterCount);
+    for (int i = 0; i < parameterCount; i++) resultPointer[i]=acnfl_generateApx(
+        sqrt((modulus(parameterList[i])+parameterList[i].realNumberValue_apx)/2), 
+        ((parameterList[i].imaginaryNumberValue_apx > 0)-(parameterList[i].imaginaryNumberValue_apx < 0))*sqrt((modulus(parameterList[i])-parameterList[i].realNumberValue_apx)/2));
+    return toReturn;
+}
+
+
+acnfl_GenericFunctionResult complex_log(long long parameterCount, acnfl_NumberObject *parameterList) {
+    acnfl_function_preliminaryCheck(parameterCount, 0, parameterList, parameterCount);
+    for (int i = 0; i < parameterCount; i++) resultPointer[i]=acnfl_generateApx(
+        // real part is the absolute value of value of the complex number 
+        // put through natural log 
+        // x+yi → ln(sqrt(x*x + y*y))
+        log(sqrt(parameterList[i].realNumberValue_apx*parameterList[i].realNumberValue_apx+parameterList[i].imaginaryNumberValue_apx*parameterList[i].imaginaryNumberValue_apx)), 
+        // We;ll use the implementation that uses atan2 for ln
+        atan2(parameterList[i].imaginaryNumberValue_apx, parameterList[i].realNumberValue_apx));
+    return toReturn;
+}
+
+
 
 void neuronLayer_setupTests(void) {
     #define initializeNeuronLayerObject(location, columns, rows, pointer) neuronLayer_initialize(neuronLayers+location); \
@@ -169,8 +195,8 @@ void calculateHiddenErrorTests_A(void) {
     neuronLayer_RegularLayer 
         backLayer = {
             .weightedInput_pointer = (acnfl_NumberObject[])
-                {acnfl_generateApx(2, 0),
-                 acnfl_generateApx(4, 0)},
+                {acnfl_generateApx(1, 0),
+                 acnfl_generateApx(2, 0)},
             .WEIGHTEDINPUT_LENGTH = 2,
             .activationFunction_pointer = x_squared
         },
@@ -185,18 +211,32 @@ void calculateHiddenErrorTests_A(void) {
                 {acnfl_generateApx(-2, 0),
                  acnfl_generateApx(0, 0)},
         };
-    acnfl_NumberObject intendedResult[] = 
-        {acnfl_generateApx(-8, 0),
-         acnfl_generateApx(-24, 0)};
-    int intendedResultLength = 2;
-
-    acnfl_NumberObject *result = neuronLayer_calculateHiddenError(backLayer, forwardLayer);
-    if(!result){
-        for (int i = 0; i < intendedResultLength; i++) {
-            ACNFL_testing_equal(result[i], intendedResult[i])
+        #define checkResult { \
+                acnfl_NumberObject *result = neuronLayer_calculateHiddenError(backLayer, forwardLayer);\
+                if(result){\
+                    for (int i = 0; i < intendedResultLength; i++) {\
+                        float comparison = acnfl_defaultComparison(result[i], intendedResult[i], (acnfl_defaultComparisonInformation) {.opType='a', .leeway_apx = true, .epsilon_apx = 0.001});\
+                        if (comparison != 0) {\
+                            printf("Result of comparison between"); acnfl_printValue(result[i]);\
+                            printf(" and "); acnfl_printValue(intendedResult[i]); printf(" is %f", comparison);\
+                        }\
+                        CU_ASSERT_EQUAL(comparison, 0);\
+                    }\
+                    free(result);\
+                }\
+            }
+        
+        int intendedResultLength;
+        {
+            acnfl_NumberObject intendedResult[] = 
+                {acnfl_generateApx(-8, 0),
+                acnfl_generateApx(-24, 0)};
+            int intendedResultLength = 2;
+            
+             
+             checkResult
+//!
         }
-        free(result);
-    }
 
     /**
     * Test 2 
@@ -228,6 +268,33 @@ void calculateHiddenErrorTests_A(void) {
     * [-252.5, 722.5, -1192.5]T
     **/
 
+    backLayer.weightedInput_pointer = (acnfl_NumberObject[]) 
+        {acnfl_generateApx(0, 0),
+        acnfl_generateApx(0, 0), 
+        acnfl_generateApx(0, 0), };
+    backLayer.WEIGHTEDINPUT_LENGTH = 3;
+    backLayer.activationFunction_pointer = giveInverse ; 
+
+    forwardLayer.weightMatrix_pointer = (acnfl_NumberObject[]) 
+            {acnfl_generateApx(1, 0), acnfl_generateApx(-5, 0),acnfl_generateApx(9, 0),
+            acnfl_generateApx(-2, 0), acnfl_generateApx(6, 0), acnfl_generateApx(-10, 0),
+            acnfl_generateApx(3, 0), acnfl_generateApx(-7, 0), acnfl_generateApx(11, 0),
+            acnfl_generateApx(-4, 0),acnfl_generateApx(8, 0),acnfl_generateApx(-12, 0)};
+    forwardLayer.weightMatrix_columns=3;
+    forwardLayer.weightMatrix_rows=4;
+    forwardLayer.errorVector_pointer = (acnfl_NumberObject[]) 
+            {acnfl_generateApx(-1, 0),
+             acnfl_generateApx(-100, 0),
+             acnfl_generateApx(20.5, 0),
+             acnfl_generateApx(2, 0)};
+
+    intendedResultLength = 3;
+    {
+        
+    acnfl_NumberObject intendedResult[] =  {acnfl_generateApx(-252.5, 0), acnfl_generateApx(722.5, 0), acnfl_generateApx(-1192.5, 0)};
+    checkResult //!
+        }
+
     /**
  * Test 3
  * 
@@ -254,6 +321,32 @@ void calculateHiddenErrorTests_A(void) {
  * Final product from the Hadamard product should be
  *   [6.375, -4.5625, 4.75]
  **/
+
+    
+    backLayer.weightedInput_pointer = (acnfl_NumberObject[]) 
+         {acnfl_generateApx(4, 0), acnfl_generateApx(16, 0), acnfl_generateApx(25, 0)};
+    backLayer.WEIGHTEDINPUT_LENGTH = 3;
+    backLayer.activationFunction_pointer = element_squareroot ; 
+
+    forwardLayer.weightMatrix_pointer = (acnfl_NumberObject[]) 
+        {acnfl_generateApx(0.5, 0), acnfl_generateApx(-1.5, 0), acnfl_generateApx(2.5, 0),
+         acnfl_generateApx(-2.5, 0), acnfl_generateApx(3.5, 0), acnfl_generateApx(-4.5, 0)};
+    forwardLayer.weightMatrix_columns=3;
+    forwardLayer.weightMatrix_rows=2;
+    forwardLayer.errorVector_pointer = (acnfl_NumberObject[]) 
+            
+             {acnfl_generateApx(1, 0), acnfl_generateApx(-10, 0)};
+
+    intendedResultLength = 3;
+    {
+        
+    acnfl_NumberObject intendedResult[] =  {
+        
+acnfl_generateApx(6.375, 0), acnfl_generateApx(-4.5625, 0), acnfl_generateApx(4.75, 0)};
+    checkResult //!
+    }
+
+
 
  /**
  * Test 4
@@ -287,6 +380,33 @@ void calculateHiddenErrorTests_A(void) {
  * To make the final Hadamard product result equal to [2, 2]T, we need to
  * scale the matrix multiplication result or modify the error vector accordingly.
  **/
+ {
+    neuronLayer_RegularLayer backLayer = {
+    .weightedInput_pointer = (acnfl_NumberObject[])
+        {acnfl_generateApx(1, 0), acnfl_generateApx(10, 0)}, // weighted inputs [1, 10]
+    .WEIGHTEDINPUT_LENGTH = 2,
+    .activationFunction_pointer = complex_log // Pointing to the log activation function
+};
+
+neuronLayer_RegularLayer forwardLayer = {
+    .weightMatrix_pointer = (acnfl_NumberObject[])
+        {acnfl_generateApx(0.5, 0), acnfl_generateApx(1, 0),   // forward layer weights
+         acnfl_generateApx(1.5, 0), acnfl_generateApx(2, 0)},
+    .weightMatrix_rows = 2,
+    .weightMatrix_columns = 2,
+    .errorVector_pointer = (acnfl_NumberObject[])
+        {acnfl_generateApx(2, 0), acnfl_generateApx(2, 0)} // forward layer error vector [2, 2]
+};
+
+// Set the intended result
+acnfl_NumberObject intendedResult[] = {
+    acnfl_generateApx(4, 0), acnfl_generateApx(0.6, 0) // Hadamard product result [4, 0.6]
+};
+
+int intendedResultLength = 2;
+
+checkResult
+ }
 
  /**
   * No. 5 
@@ -306,6 +426,52 @@ void calculateHiddenErrorTests_A(void) {
  * The matrix multiplication wT * error should be:
  *   [-5.5+9i, -6+4i]
  * Therefore the hadamard product is 
- *   [-47-4i, -48+58i]
+ *   [-47-4i, -96+116i]
   **/
+
+  {
+    neuronLayer_RegularLayer backLayer, forwardLayer;
+    
+    // Define the activation function (x^2) and its derivative (2x)
+    backLayer.activationFunction_pointer = x_squared; // x^2 activation function
+    backLayer.WEIGHTEDINPUT_LENGTH = 2;
+    
+    // Weighted inputs for the backLayer: [1 + 2i, 10 - 3i]
+    backLayer.weightedInput_pointer = (acnfl_NumberObject[]) {
+        acnfl_generateApx(1, 2),  // 1 + 2i
+        acnfl_generateApx(10, -3) // 10 - 3i
+    };
+
+    
+    
+    // Define the forwardLayer weight matrix:
+    // [0.5 + 1i, 1 - 2i]
+    // [1.5 + 0.5i, 2 + 3i]
+    forwardLayer.weightMatrix_pointer = (acnfl_NumberObject[]) {
+        acnfl_generateApx(0.5, 1),  // 0.5 + 1i
+        acnfl_generateApx(1, -2),   // 1 - 2i
+        acnfl_generateApx(1.5, 0.5),// 1.5 + 0.5i
+        acnfl_generateApx(2, 3)    // 2 + 3i
+    };
+
+    forwardLayer.weightMatrix_columns = 2;
+    forwardLayer.weightMatrix_rows = 2;
+
+    // Error vector for the forwardLayer: [2 + 3i, -1 + 4i]
+    forwardLayer.errorVector_pointer = (acnfl_NumberObject[]) {
+        acnfl_generateApx(2, 3),  // 2 + 3i
+        acnfl_generateApx(-1, 4)  // -1 + 4i
+    };
+
+   
+    // Perform Hadamard product: [derivative] * [result of multiplication]
+    acnfl_NumberObject intendedResult[] = {
+        acnfl_generateApx(-47, -4),  
+        acnfl_generateApx(-96, 116)   
+    };
+
+    // Check the final result
+    int intendedResultLength = 2;
+    checkResult //!
+}
 }
