@@ -104,7 +104,6 @@ typedef struct neuronLayer_regularLayer {
 
 
 
-
 int neuronLayer_initialize(neuronLayer_RegularLayer *toBeInitialized) ;
 int neuronLayer_configure(neuronLayer_RegularLayer *toBeConfigured, long long int columns, long long int rows) ;
 int  neuronLayer_destroy(neuronLayer_RegularLayer *toBeDestroyed);

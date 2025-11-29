@@ -108,7 +108,7 @@ int  neuronLayer_destroy(neuronLayer_RegularLayer *toBeDestroyed) {
     (toBeDestroyed->weightedInput_pointer)= NULL;}
 
     if (toBeDestroyed->outputVector_pointer!= NULL){
-    free(toBeDestroyed->outputVector_pointer);
+        free(toBeDestroyed->outputVector_pointer);
     (toBeDestroyed->outputVector_pointer)=NULL;}
 
     if (toBeDestroyed->errorVector_pointer!= NULL){
@@ -126,6 +126,7 @@ int  neuronLayer_destroy(neuronLayer_RegularLayer *toBeDestroyed) {
 }
 /**
  * Sets all values to a valid zero value for the regularLayer object.
+ NOT FINISHED
  **/
 void neuronLayer_regularLayer_zeroOut(neuronLayer_RegularLayer zeroOutTarget) {
     if (zeroOutTarget.weightMatrix_pointer!=NULL) {

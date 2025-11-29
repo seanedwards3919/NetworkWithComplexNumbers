@@ -1,3 +1,4 @@
+/** @file: acnfl_derivative.h*/
 /** Todo: Optimization idea, allow functions that return a acnfl_genericFunctionResult to have user specify where they want data stored BE AWARE THIS COULD BE INTENSELY ERROR-PRONE */
 
 #ifndef ACNFL_DERIVATIVE_H
@@ -19,10 +20,33 @@ typedef struct acnfl_genericFunctionResult {
     acnfl_NumberObject* results;
 } acnfl_GenericFunctionResult;
 
-/// Provides a generic colong long intntainer for mathmatical functions that need to be handled.
+/// Provides a generic container for mathmatical functions that need to be handled.
 typedef acnfl_GenericFunctionResult (*acnfl_GenericFunctionDefinition)(
     int_functionParameter parameterCount, 
     acnfl_NumberObject *parameterList) ;
+
+/***
+ * Provides a way to store information about an acnfl_GenericFunctionDefinition.
+ * @param expected_inputs_minimum The expected number of inputs to the function. Should be set to -1 if any number of inputs are acceptable.
+ * @param expected_inputs_maximum The expected number of inputs to the function. Should be set to -1 if any number of inputs are acceptable
+ * @param expected_inputs_difference Whether the minimum and maximum number of expected inputs differ.
+ * @param expected_outputs_minimum The expected number of inputs to the function. Should be set to -1 if any number of inputs are possible.
+ * @param expected_outputs_maximum The expected number of inputs to the function. Should be set to -1 if any number of outputs are possible.
+ * @param expected_outputs_difference Whether the minimum and maximum number of expected outputs differ.
+ * @param functionPointer Pointer to function.
+
+ */
+typedef struct acnfl_genericFunctionContainer {
+    int_functionParameter expected_inputs_minimum;
+    int_functionParameter expected_inputs_maximum;
+    bool expected_inputs_difference;
+
+    int_functionParameter expected_outputs_minimum;
+    int_functionParameter expected_outputs_maximum;
+    bool expected_outputs_difference; 
+
+    acnfl_GenericFunctionDefinition functionPointer;
+} acnfl_GenericFunctionContainer;
 
 void acnfl_printFunctionResult(acnfl_GenericFunctionResult *indexPointer);
 

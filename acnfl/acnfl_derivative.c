@@ -8,6 +8,20 @@
     Make sure to handle all cases where program exits ungracefully using exit();
  */
 
+ /**
+ * TODO: Add support for
+ *  Setting specifications for:
+ *    Formula for averaging together different tests
+ *  Change ratio-total-formula
+ *  Cut off results after certain specificity so residual imaginary results don't built up?
+ *  Reading functions from Lua
+ *  
+ *
+ *  
+ **/
+
+
+
 #include "acnfl_derivative.h"
 #include <stdio.h>
 #include <stdlib.h>
@@ -224,7 +238,7 @@ acnfl_GenericFunctionResult acnfl_derivative(acnfl_NumberObject *locationToDiffe
 acnfl_GenericFunctionResult acnfl_derivative_default(acnfl_NumberObject *locationToDifferentiate, int_functionParameter numberOfLocations, int_functionParameter indexToDerive,  acnfl_GenericFunctionDefinition functionPointer) 
 {
     acnfl_NumberObject delta    = acnfl_generateApx(0.001, 0.001);
-    return acnfl_derivative(locationToDifferentiate, numberOfLocations, indexToDerive, 10, functionPointer, delta); 
+    return acnfl_derivative(locationToDifferentiate, numberOfLocations, indexToDerive, 10, functionPointer, delta);  
 }
 
 
