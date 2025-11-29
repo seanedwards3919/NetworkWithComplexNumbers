@@ -3,7 +3,7 @@
  * ACNFL stands for: Automatically Compatable Numbertypes and Functions Library. 
  */
 #include "acnfl_math.h"
-#include "../reporting/reporting_3.h"
+#include "../reporting/reporting_2.h"
 
 #include <stdbool.h>
 #include <stdio.h>
@@ -493,7 +493,12 @@ float acnfl_defaultComparison(acnfl_NumberObject a, acnfl_NumberObject b,
                 acnfl_valueType_apx diff  = fabsl(a_com-b_com),
                                     den  = fabsl(a_com) + fabsl(b_com),
                                     comparison = diff/den;
-                if (comparison < parameter.epsilon_apx)  return 0; 
+                if (comparison < parameter.epsilon_apx) {
+                    #ifdef  REPORTING_1
+                        printf("Determined equal...");
+                    #endif
+                     return 0;
+                    }
                 
             }
             else {
