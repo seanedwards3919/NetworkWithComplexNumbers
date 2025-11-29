@@ -61,14 +61,11 @@ acnfl_GenericFunctionResult multipleInputs(long long parameterCount, acnfl_Numbe
 }
 
 
-acnfl_GenericFunctionResult x_squared(long long parameterCount, acnfl_NumberObject *parameterList) {
-    // Only takes the first parameter.
-   acnfl_function_preliminaryCheck(parameterCount, 1, parameterList, 1);
-    resultPointer[0] =
-            // Actual equation, only reads first
-                        acnfl_multiply(parameterList[0], parameterList[0]);
 
-    return  toReturn;
+acnfl_GenericFunctionResult x_squared(long long parameterCount, acnfl_NumberObject *parameterList) {
+    acnfl_function_preliminaryCheck(parameterCount, 0, parameterList, parameterCount);
+    for (int i = 0; i < parameterCount; i++) resultPointer[i]=acnfl_multiply(parameterList[i], parameterList[i]);
+    return toReturn;
 }
 
 acnfl_GenericFunctionResult randomPolynomial(long long parameterCount, acnfl_NumberObject *parameterList) {
