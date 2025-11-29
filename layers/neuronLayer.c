@@ -424,7 +424,7 @@ acnfl_NumberObject* neuronLayer_calculateHiddenError(neuronLayer_RegularLayer be
     {
         for (long long behindLayerIndex = 0; behindLayerIndex < behindLayer.WEIGHTEDINPUT_LENGTH; behindLayerIndex++) {
             acnfl_GenericFunctionResult results = acnfl_derivative_default((behindLayer.weightedInput_pointer+behindLayerIndex), 1, 0, behindLayer.activationFunction_pointer);
-            if (results.results == NULL) return NULL;
+            if (results.results == NULL) {free(toReturn); return NULL;}
             startOfB[behindLayerIndex] = results.results[0];
             acnfl_freeHeldResults(&results);
         }
