@@ -514,8 +514,56 @@ int neuronLayer_changeInBiases(neuronLayer_RegularLayer main, acnfl_NumberObject
     }
     return 0;
 } 
-int neuronLayer_adjust(neuronLayer_RegularLayer main, neuronLayer_RegularLayer *back) {
+/**
+ * Puts the new weight matrix and bias vector in a regularlayer object.
+ *  
+ * If this function reaches the maximum defined by newWeightMatrixLength or newBiasVectorLength without depositing all of the values for either, returns 1
+ *
+ * or needs to stop prematurely because of main length exceeds passed length, 
+ * returns 2
+ *
+ * If both, returns 3
+ *
+ * if passed null, returns -1
+ *
+ * if null inside main object, returns -2
+ * 
+ **/
+int neuronLayer_deposit(
+    neuronLayer_RegularLayer main,
+    acnfl_NumberObject *newWeightMatrix, int newWeightMatrixLength,
+    acnfl_NumberObject *newBiasVector, int newBiasVectorLength
+) {
+    int returnValue = 0; 
+    if ((!newWeightMatrix) || (!newBiasVector))
+        return -1;
+    if ((!main.weightMatrix_pointer) || (!main.biasVector_pointer))
+        return -2;
+     
 
-    //
-    return 0;
+    int index;
+    for (index = 0; (index<(main.weightMatrix_columns*main.weightMatrix_rows))&&(index<newWeightMatrixLength); index++) {
+        main.weightMatrix_pointer[index] = newWeightMatrix[index];
+    }   
+    if (index < (main.weightMatrix_columns*main.weightMatrix_rows))
+        returnValue+=2;
+    if (index < newWeightMatrixLength)
+        returnValue +=1;
+    
+
+    for (index = 0; (index<main.BIASVECTOR_LENGTH)&&(index <newBiasVectorLength); index++) {
+        main.biasVector_pointer[index] = newBiasVector[index];
+    }
+
+    if (index < newBiasVectorLength)
+        {
+            if ((returnValue != 1)&&(returnValue != 3))
+                returnValue += 1;
+        }
+    if (index < main.BIASVECTOR_LENGTH)
+    {
+        if (returnValue < 2)
+            returnValue +=2;
+    }
+    return returnValue;
 }

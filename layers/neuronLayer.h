@@ -126,7 +126,11 @@ acnfl_NumberObject* neuronLayer_linearCombinationCaluclate(neuronLayer_RegularLa
 acnfl_NumberObject* neuronLayer_calculateHiddenError(neuronLayer_RegularLayer, neuronLayer_RegularLayer);
 int neuronLayer_changeInWeights(neuronLayer_RegularLayer main, neuronLayer_RegularLayer back, acnfl_NumberObject *deposit, int depositMaximum); /** IMPLEMENT NEXT */
 int neuronLayer_changeInBiases(neuronLayer_RegularLayer main, acnfl_NumberObject *deposit, int depositMaximum); /** IMPLEMENT NEXT */
-int neuronLayer_adjust(neuronLayer_RegularLayer main, neuronLayer_RegularLayer *back); /** */
+int neuronLayer_deposit(
+    neuronLayer_RegularLayer main,
+    acnfl_NumberObject *newWeightMatrix, int newWeightMatrixLength,
+    acnfl_NumberObject *newBiasVector, int newBiasVectorLength
+);
 
 int neuronLayer_backpropogate(neuronLayer_RegularLayer*, long long, neuronLayer_RegularLayer outputLayer, layers_DataSetObject intended_result, acnfl_GenericFunctionDefinition costFunction); /**IMPLEMENT NEXT */
 /** IMPLEMENT: int neuronLayer_updateWeights(neuronLayer_RegularLayer*, long long) CALL FROM INSIDE BACKPROPOGATE*/
