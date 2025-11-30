@@ -483,7 +483,7 @@ int neuronLayer_changeInWeights(neuronLayer_RegularLayer main, neuronLayer_Regul
             neuronLayer_matrix_elementSelect(newValue, main.weightMatrix_columns, currentRow, currentColumn) = acnfl_add(neuronLayer_matrix_elementSelect(difference, main.weightMatrix_columns, currentRow, currentColumn), neuronLayer_matrix_elementSelect(main.weightMatrix_pointer, main.weightMatrix_columns, currentRow, currentColumn));
             neuronLayer_matrix_elementSelect(deposit, main.weightMatrix_columns, currentRow, currentColumn) = neuronLayer_matrix_elementSelect(newValue, main.weightMatrix_columns, currentRow, currentColumn);
             indexCount++;
-            if (indexCount <= depositMaximum)
+            if (indexCount >= depositMaximum)
                 return 3;
         }
     }
