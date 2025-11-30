@@ -132,7 +132,13 @@ int neuronLayer_deposit(
     acnfl_NumberObject *newBiasVector, int newBiasVectorLength
 );
 
-int neuronLayer_backpropogate(neuronLayer_RegularLayer*, long long, neuronLayer_RegularLayer outputLayer, layers_DataSetObject intended_result, acnfl_GenericFunctionDefinition costFunction); /**IMPLEMENT NEXT */
+int neuronLayer_backpropogateNetwork(
+    neuronLayer_RegularLayer *network,
+    long long int networkLayersLength,
+
+    layers_DataSetObject intendedResult,
+    acnfl_GenericFunctionDefinition costFunction
+);
 /** IMPLEMENT: int neuronLayer_updateWeights(neuronLayer_RegularLayer*, long long) CALL FROM INSIDE BACKPROPOGATE*/
     
 #endif

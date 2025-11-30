@@ -574,3 +574,52 @@ int neuronLayer_deposit(
     }
     return returnValue;
 }
+
+
+/**
+ * Backpropogates the results for each layer in the neural network, and 
+ * deposits errors in error vectors.
+ *  
+ * @param networkLayers Pointer to a list of network layers 
+ * @param networkLayersLength How long networkLayers is 
+ * @param inputdata Input data to the neural network. Needed for changeInWeights
+ * @param intendedResult The correct result of the inputs from the training data. For calculate output error.
+ * @return 0 if all good, 1 if couldn't complete operation, 2 if completed with errors
+ **/
+int neuronLayer_backpropogateNetwork(
+    neuronLayer_RegularLayer *network,
+    long long int networkLayersLength,
+
+    layers_DataSetObject intendedResult,
+    acnfl_GenericFunctionDefinition costFunction
+) {
+    int returnValue = 0;
+    if (networkLayersLength < 1) return 2;
+
+    // perform backpropogation for last layer
+    acnfl_NumberObject *errorResult = neuronLayer_calculateOutputError(network[networkLayersLength-1], intendedResult, costFunction);
+    for (int i = 0; i < network[networkLayersLength-1].ERRORVECTOR_LENGTH; i++) {
+        network[networkLayersLength-1].errorVector_pointer[i] = errorResult[i];
+    }
+    if (!errorResult) return 2;
+    free(errorResult);
+
+    // perform backpropogation for all other layers
+    // for indecies networkLayersLength-2...0 : i
+    for (long long index = networkLayersLength-2; index>=0; index--) {
+        // result ← calculateHiddenError(i, i+1) 
+        errorResult =  neuronLayer_calculateHiddenError(network[index], network[index+1]);
+        // if (!result) return 2 
+        if (!errorResult) return 2;
+        // i.errorVector ← result
+        for (int i = 0; i < network[index].ERRORVECTOR_LENGTH; i++)
+            {network[index].errorVector_pointer[i] = errorResult[i];}
+        // free(result)
+        free(errorResult);
+    }
+
+    return returnValue;
+}
+
+
+
