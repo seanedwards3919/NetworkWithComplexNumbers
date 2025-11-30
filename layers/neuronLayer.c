@@ -623,3 +623,121 @@ int neuronLayer_backpropogateNetwork(
 
 
 
+
+
+int neuronLayer_updateNetwork(
+    neuronLayer_RegularLayer *network,
+    long long int networkLayersLength,
+
+    layers_DataSetObject inputdata
+) {
+
+    int returnValue = 0;
+
+    if (networkLayersLength < 1) return 2;
+    // Update on all other layers
+
+    // for index networkLayersLength-1 ... 1 : i 
+    for (int index = networkLayersLength-1; index>0; index-- ){
+        // allocate buffer_a ; array w/ dimensions network[i].rows * network[i].columns
+        acnfl_NumberObject buffer_a[network[index].weightMatrix_rows * network[index].weightMatrix_columns],
+        // allocate buffer_b ; array w/ dimensions network[i].bias_length
+            buffer_b[network[index].BIASVECTOR_LENGTH];
+        // changeInWeights(network[i], network[i-1], buffer_a)
+        #ifdef REPORTING_2
+        int result=
+        #endif
+        neuronLayer_changeInWeights(network[index], network[index-1], buffer_a, network[index].weightMatrix_rows*network[index].weightMatrix_columns);
+        #ifdef REPORTING_2
+        if (result!=0)
+            printf("Result of changeInWeights was %d on index %d", result, index);
+        #endif
+        // changeInBiases(network[i], buffer_b)
+        #ifdef REPORTING_2
+        result =
+        #endif
+        neuronLayer_changeInBiases(network[index], buffer_b, network[index].BIASVECTOR_LENGTH); 
+        #ifdef REPORTING_2
+        if (result!=0)
+            printf("Result of changeInBiases was %d on index %d", result, index);
+        #endif
+        // neuronLayer_deposit( network[i], buffer_a, buffer_b)
+        #ifdef REPORTING_2
+        result =
+        #endif
+        neuronLayer_deposit(network[index], buffer_a, network[index].weightMatrix_rows*network[index].weightMatrix_columns, buffer_b, network[index].ERRORVECTOR_LENGTH);
+        #ifdef REPORTING_2
+        if (result!=0)
+            printf("Result of network was %d on index %d", result, index);
+        
+        #endif
+ 
+    }
+    // Update on lastlayer
+
+    if (inputdata.dataSetType == LAYERS_DATASET_SINGULAR) {
+        layers_DataSetSingular *redfinedInputdata = (layers_DataSetSingular*) inputdata.dataSet;
+    //Hook up inputData to the neural network.
+        neuronLayer_RegularLayer mockLayer = {
+            .OUTPUTVECTOR_LENGTH = redfinedInputdata->length,
+            .outputVector_pointer = redfinedInputdata->dataList,
+            .biasVector_pointer = NULL,
+            .errorVector_pointer = NULL,
+            .activationFunction_pointer = NULL,
+            .weightedInput_pointer = NULL,
+            .weightMatrix_pointer = NULL
+        };
+
+            // allocate buffer_a ; array w/ dimensions network[0].rows * network[0].columns
+            // allocate buffer_b ; array w/ dimensions network[0].bias_length
+            // changeInWeights(network[i], mockLayer, buffer_a)
+            // changeInBiases(network[i], buffer_b)
+            // neuronLayer_deposit( network[i], buffer_a, buffer_b)
+
+        acnfl_NumberObject buffer_a[network[0].weightMatrix_rows * network[0].weightMatrix_columns],
+        // allocate buffer_b ; array w/ dimensions network[i].bias_length
+            buffer_b[network[0].BIASVECTOR_LENGTH];
+        // changeInWeights(network[i], network[i-1], buffer_a)
+        #ifdef REPORTING_2
+        int result=
+        #endif
+        neuronLayer_changeInWeights(network[0], mockLayer, buffer_a, network[0].weightMatrix_rows*network[0].weightMatrix_columns);
+        #ifdef REPORTING_2
+        if (result!=0)
+            printf("Result of changeInWeights was %d on index %d", result, 0);
+        #endif
+        // changeInBiases(network[i], buffer_b)
+        #ifdef REPORTING_2
+        result =
+        #endif
+        neuronLayer_changeInBiases(network[0], buffer_b, network[0].BIASVECTOR_LENGTH); 
+        #ifdef REPORTING_2
+        if (result!=0)
+            printf("Result of changeInBiases was %d on index %d", result, 0);
+        #endif
+        // neuronLayer_deposit( network[i], buffer_a, buffer_b)
+        #ifdef REPORTING_2
+        result =
+        #endif
+        neuronLayer_deposit(network[0], buffer_a, network[0].weightMatrix_rows*network[0].weightMatrix_columns, buffer_b, network[0].ERRORVECTOR_LENGTH);
+        #ifdef REPORTING_2
+        if (result!=0)
+            printf("Result of network was %d on index %d", result, 0);
+        
+        #endif
+ 
+
+
+ 
+    }else {
+        #ifdef REPORTING_3
+            printf("FEEDFORWARD NETWORK: NOT COMPATABLE DATASET TYPE: %d", inputdata.dataSetType);
+        #endif
+        return 1;
+    } 
+
+
+
+        
+    return returnValue;
+}

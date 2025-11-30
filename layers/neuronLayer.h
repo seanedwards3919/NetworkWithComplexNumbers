@@ -139,6 +139,11 @@ int neuronLayer_backpropogateNetwork(
     layers_DataSetObject intendedResult,
     acnfl_GenericFunctionDefinition costFunction
 );
-/** IMPLEMENT: int neuronLayer_updateWeights(neuronLayer_RegularLayer*, long long) CALL FROM INSIDE BACKPROPOGATE*/
+int neuronLayer_updateNetwork(
+    neuronLayer_RegularLayer *network,
+    long long int networkLayersLength,
+
+    layers_DataSetObject inputdata
+);
     
 #endif
