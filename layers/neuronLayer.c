@@ -449,7 +449,8 @@ acnfl_NumberObject* neuronLayer_calculateHiddenError(neuronLayer_RegularLayer be
  * Deposits the new values for a neuronLayer_regularLayer's weight values into 
  * a NumberObject array.
  * @param main Layer whose new weight values will be calculated. Error values 
- * will be used in the algorithm.
+ * will be used in the algorithm. If there are null values within the 
+ * main object, -1 will be returned
  *  
 
 
@@ -466,6 +467,8 @@ int neuronLayer_changeInWeights(neuronLayer_RegularLayer main, neuronLayer_Regul
     // Deposit  weights into deposit according to error times activation
     if (!deposit) 
         return 1;
+    if ((!main.weightMatrix_pointer) || (!main.errorVector_pointer))
+        return -1;
     if (depositMaximum<1)
         return 2;
     return 0; 
@@ -493,6 +496,8 @@ int neuronLayer_changeInWeights(neuronLayer_RegularLayer main, neuronLayer_Regul
  * Deposits the new values for a neuronLayer_regularLayer's bias values into 
  * a NumberObject array.
  * @param main Layer whose new bias values will be calculated. Error values will be used in algorithm. 
+ * If there are null values within the 
+ * main object, -1 will be returned
  * @param deposit Array to write into. If null, program returns 1
  * @param depositMaximum The length of deposit. If depositMaximum<1, returns 2. 
  * Function will write values up until it reaches the maximum specified by this 
@@ -502,6 +507,8 @@ int neuronLayer_changeInWeights(neuronLayer_RegularLayer main, neuronLayer_Regul
 int neuronLayer_changeInBiases(neuronLayer_RegularLayer main, acnfl_NumberObject *deposit, int depositMaximum){
     if (!deposit) 
         return 1;
+    if (!main.biasVector_pointer) 
+        return -1;
     if (depositMaximum<1)
         return 2;
 
