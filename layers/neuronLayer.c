@@ -490,7 +490,8 @@ int neuronLayer_changeInWeights(neuronLayer_RegularLayer main, neuronLayer_Regul
     return 0;
 }
 /***
- * 
+ * Deposits the new values for a neuronLayer_regularLayer's bias values into 
+ * a NumberObject array.
  * @param main Layer whose new bias values will be calculated. Error values will be used in algorithm. 
  * @param deposit Array to write into. If null, program returns 1
  * @param depositMaximum The length of deposit. If depositMaximum<1, returns 2. 
@@ -499,7 +500,18 @@ int neuronLayer_changeInWeights(neuronLayer_RegularLayer main, neuronLayer_Regul
  * written, returns 3.
  **/
 int neuronLayer_changeInBiases(neuronLayer_RegularLayer main, acnfl_NumberObject *deposit, int depositMaximum){
-    // Deposit error 
+    if (!deposit) 
+        return 1;
+    if (depositMaximum<1)
+        return 2;
+
+    int indexCount = 0; 
+    for (int elementIndex = 0; elementIndex < main.ERRORVECTOR_LENGTH; elementIndex++ ) {
+        deposit[elementIndex] = acnfl_add(main.biasVector_pointer[elementIndex], main.biasVector_pointer[elementIndex]);
+        indexCount ++;
+        if (indexCount>=depositMaximum)
+            return 3;
+    }
     return 0;
 } 
 int neuronLayer_adjust(neuronLayer_RegularLayer main, neuronLayer_RegularLayer *back) {
