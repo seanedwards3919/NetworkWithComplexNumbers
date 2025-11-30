@@ -126,7 +126,6 @@ int  neuronLayer_destroy(neuronLayer_RegularLayer *toBeDestroyed) {
 }
 /**
  * Sets all values to a valid zero value for the regularLayer object.
- NOT FINISHED
  **/
 void neuronLayer_regularLayer_zeroOut(neuronLayer_RegularLayer zeroOutTarget) {
     if (zeroOutTarget.weightMatrix_pointer!=NULL) {
@@ -146,7 +145,7 @@ void neuronLayer_regularLayer_zeroOut(neuronLayer_RegularLayer zeroOutTarget) {
     }
     if (zeroOutTarget.weightedInput_pointer!=NULL) {
         for (long long i = 0; i < (zeroOutTarget.WEIGHTEDINPUT_LENGTH); i++) {
-            zeroOutTarget.weightMatrix_pointer[i]=acnfl_generateApx(0, 0);
+            zeroOutTarget.weightedInput_pointer[i]=acnfl_generateApx(0, 0);
         }
     }
     if (zeroOutTarget.errorVector_pointer!=NULL) {
@@ -490,10 +489,21 @@ int neuronLayer_changeInWeights(neuronLayer_RegularLayer main, neuronLayer_Regul
     }
     return 0;
 }
+/***
+ * 
+ * @param main Layer whose new bias values will be calculated. Error values will be used in algorithm. 
+ * @param deposit Array to write into. If null, program returns 1
+ * @param depositMaximum The length of deposit. If depositMaximum<1, returns 2. 
+ * Function will write values up until it reaches the maximum specified by this 
+ * variable. If it terminates before all values for new weight matrix have been 
+ * written, returns 3.
+ **/
 int neuronLayer_changeInBiases(neuronLayer_RegularLayer main, acnfl_NumberObject *deposit, int depositMaximum){
     // Deposit error 
     return 0;
 } 
 int neuronLayer_adjust(neuronLayer_RegularLayer main, neuronLayer_RegularLayer *back) {
 
+    //
+    return 0;
 }
