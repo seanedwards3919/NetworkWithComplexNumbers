@@ -598,10 +598,11 @@ int neuronLayer_backpropogateNetwork(
 
     // perform backpropogation for last layer
     acnfl_NumberObject *errorResult = neuronLayer_calculateOutputError(network[networkLayersLength-1], intendedResult, costFunction);
+    
+    if (!errorResult) return 2;
     for (int i = 0; i < network[networkLayersLength-1].ERRORVECTOR_LENGTH; i++) {
         network[networkLayersLength-1].errorVector_pointer[i] = errorResult[i];
     }
-    if (!errorResult) return 2;
     free(errorResult);
 
     // perform backpropogation for all other layers
