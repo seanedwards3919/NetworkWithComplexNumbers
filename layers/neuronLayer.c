@@ -302,7 +302,7 @@ int layers_feedForwardNetwork(
  * @param outputLayer The final layer in a regular neural network.
  * @param intendedResult The "correct" result of the inputs from the training data
  * @param costFunction A pointer to a cost function used to evaluate the differecen between the outputLayer and intendedResult. A cost function, generally, should satisfy two conditions: 
- - It should be able to take in an arbitrary number of inputs, as long as that number is even. For a neural network that outputs n results, inputs 1..n to the function should be the actual results from the neural network, and inputs n+1..2n are the intended results of the neural network. The function should essentially take the first half of the inputs as the actual outputs of the neural network and the second half as the intended output of the neural network. The function should reject any calls with an odd number of functions.
+ - It should be able to take in an arbitrary high number of inputs, as long as that number is even. For a neural network that outputs n results, inputs 1..n to the function should be the actual results from the neural network, and inputs n+1..2n are the intended results of the neural network. The function should essentially take the first half of the inputs as the actual outputs of the neural network and the second half as the intended output of the neural network. The function should reject any calls with an odd number of functions.
  - It should return one output.
  TODO: MAKE SURE THIS WORKS. TESTING
  Costfunctions that don't satisfy these requirements may cause behavior or results you did not intend.
@@ -319,7 +319,7 @@ int layers_feedForwardNetwork(
     if (intendedResult.dataSetType == LAYERS_DATASET_SINGULAR) { 
         #define intendedResultAsSingular ((layers_DataSetSingular*)intendedResult.dataSet)
         //Make sure outputLayer.output and intendedResult are the same length
-        if ((outputLayer.OUTPUTVECTOR_LENGTH == intendedResultAsSingular->length) == outputLayer.WEIGHTEDINPUT_LENGTH ) {
+        if ((outputLayer.OUTPUTVECTOR_LENGTH == intendedResultAsSingular->length) ) {
              toReturn = malloc(sizeof(acnfl_NumberObject)*outputLayer.OUTPUTVECTOR_LENGTH);
              if (toReturn == NULL) return toReturn;
             {
