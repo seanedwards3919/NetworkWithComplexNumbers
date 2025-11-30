@@ -12,7 +12,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <time.h>
-
+#include "../reporting/reporting_2.h"
 /************************************************
  * 
  * DATA MANAGEMENT FUNCTIONS 

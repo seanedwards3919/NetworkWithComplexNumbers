@@ -12,7 +12,6 @@
 #include <stdbool.h>
 #include <stdio.h>
 
-#include "../reporting/reporting_3.h"
 
 /** The type with which the values are stored. Made modular like this so it may be changed in future.
  */
