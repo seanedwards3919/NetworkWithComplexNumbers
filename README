@@ -3,3 +3,5 @@ This is a C library that allows a user to create and run a neural network for nu
 While this can be currently built on Linux, it's mostly being written as an experiment and a way to familiarize myself with larger projects and C. It is currently usable as a full neural network, though it is a work in progress.
 
 This software is licensed under the 3-clause BSD License (see LICENSE). 
+
+This software, in its default configuration, links to a CUnit (https://sourceforge.net/projects/cunit/) library object file on the user's computer (see the CMakeLists.txt file in the top-level folder of this repository). The CUnit library is licensed under the GNU Library General Public License version 2.0 (https://www.gnu.org/licenses/old-licenses/lgpl-2.0.html).
