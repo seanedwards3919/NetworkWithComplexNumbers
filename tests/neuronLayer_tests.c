@@ -20,11 +20,11 @@ layers_DataSetObject datasets[DATASETOBJECT_NUMBER];
 layers_DataSetSingular datasetsSingular[DATASETSINGULAR_NUMBER];
 
 acnfl_GenericFunctionResult costFunctionExample(long long parameterCount, acnfl_NumberObject *parameterList) {
-    acnfl_function_preliminaryCheck(parameterCount,2,parameterList,1);
+    
     if (parameterCount%2 != 0) {
-        free(resultPointer);
-        return toReturn;
+        return (acnfl_GenericFunctionResult) {.resultsAmount = 0, .results = NULL};
     }
+    acnfl_function_preliminaryCheck(parameterCount,2,parameterList,1);
     long long actualLength = parameterCount/2;
     resultPointer[0] = acnfl_generateApx(0, 0);
     for (long long index = 0; index < actualLength; index++ ) {
