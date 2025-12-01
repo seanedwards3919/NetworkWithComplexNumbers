@@ -24,26 +24,6 @@
  *   the user pleases. Also pass how much memory is left.
  */
 
-/** ----------------------- **/
-/**genericFunctionResults
- * This is the main function for this program. We're just putting this here to set up Doxygen.
- */
-int main() {
-    #ifdef REPORTING_1
-        clock_t startingTime_wholeProgram = clock();
-    #endif
-
-    /** Run tests */
-    test_HeadProcess();
-
-
-
-    #ifdef REPORTING_1
-        clock_t endingTime_wholeProgram = clock();
-        printf("\n");
-        printf("This program took %Lf seconds and %ld ticks to run\n",
-             ((long double) (endingTime_wholeProgram-startingTime_wholeProgram))/CLOCKS_PER_SEC,
-            (endingTime_wholeProgram-startingTime_wholeProgram));
-    #endif
-
-   }
+int version(void) {
+    return 1;
+}
