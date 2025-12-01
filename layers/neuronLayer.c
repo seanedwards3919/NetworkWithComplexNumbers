@@ -11,7 +11,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <time.h>
 #include "../reporting/reporting_2.h"
 /************************************************
  * 
@@ -319,7 +318,7 @@ int layers_feedForwardNetwork(
     if (intendedResult.dataSetType == LAYERS_DATASET_SINGULAR) { 
         #define intendedResultAsSingular ((layers_DataSetSingular*)intendedResult.dataSet)
         //Make sure outputLayer.output and intendedResult are the same length
-        if ((outputLayer.OUTPUTVECTOR_LENGTH == intendedResultAsSingular->length) ) {
+        if (outputLayer.OUTPUTVECTOR_LENGTH == intendedResultAsSingular->length ) {
              toReturn = malloc(sizeof(acnfl_NumberObject)*outputLayer.OUTPUTVECTOR_LENGTH);
              if (toReturn == NULL) return toReturn;
             {
@@ -480,7 +479,7 @@ int neuronLayer_changeInWeights(neuronLayer_RegularLayer main, neuronLayer_Regul
         difference[main.weightMatrix_rows *main.weightMatrix_columns];
 
     for (int currentRow = 0; currentRow < main.weightMatrix_rows; currentRow ++) {
-        for (int currentColumn; currentColumn < main.weightMatrix_columns; currentColumn++) {
+        for (int currentColumn = 0; currentColumn < main.weightMatrix_columns; currentColumn++) {
             neuronLayer_matrix_elementSelect(difference, main.weightMatrix_columns, currentRow, currentColumn) = acnfl_multiply(back.outputVector_pointer[currentRow], main.errorVector_pointer[currentRow]);
             neuronLayer_matrix_elementSelect(newValue, main.weightMatrix_columns, currentRow, currentColumn) = acnfl_add(neuronLayer_matrix_elementSelect(difference, main.weightMatrix_columns, currentRow, currentColumn), neuronLayer_matrix_elementSelect(main.weightMatrix_pointer, main.weightMatrix_columns, currentRow, currentColumn));
             neuronLayer_matrix_elementSelect(deposit, main.weightMatrix_columns, currentRow, currentColumn) = neuronLayer_matrix_elementSelect(newValue, main.weightMatrix_columns, currentRow, currentColumn);
