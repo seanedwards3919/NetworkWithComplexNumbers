@@ -14,10 +14,28 @@
 
 #define REGULARLAYER_NUMBER 5
 neuronLayer_RegularLayer neuronLayers[REGULARLAYER_NUMBER];
-#define DATASETOBJECT_NUMBER 1
+#define DATASETOBJECT_NUMBER 2
 layers_DataSetObject datasets[DATASETOBJECT_NUMBER];
-#define DATASETSINGULAR_NUMBER 1
+#define DATASETSINGULAR_NUMBER 2
 layers_DataSetSingular datasetsSingular[DATASETSINGULAR_NUMBER];
+
+acnfl_GenericFunctionResult costFunctionExample(long long parameterCount, acnfl_NumberObject *parameterList) {
+    acnfl_function_preliminaryCheck(parameterCount,2,parameterList,1);
+    if (parameterCount%2 != 0) {
+        free(resultPointer);
+        return toReturn;
+    }
+    long long actualLength = parameterCount/2;
+    resultPointer[0] = acnfl_generateApx(0, 0);
+    for (long long index = 0; index < actualLength; index++ ) {
+        acnfl_NumberObject workingNumber = ancfl_subtract(parameterList[index], parameterList[actualLength+index]);
+        workingNumber = acnfl_multiply(workingNumber, workingNumber);
+        workingNumber = acnfl_divide(workingNumber, acnfl_generateApx(actualLength, 0));
+        resultPointer[0] = acnfl_add(resultPointer[0], workingNumber);
+    }
+
+    return toReturn;
+}
 
 acnfl_GenericFunctionResult returnSumOfGiven(long long parameterCount, acnfl_NumberObject *parameterList) {
     acnfl_function_preliminaryCheck(parameterCount, 0, parameterList, 1);
@@ -66,6 +84,7 @@ acnfl_GenericFunctionResult complex_log(long long parameterCount, acnfl_NumberOb
 
 
 void neuronLayer_setupTests(void) {
+    printf("SETTING UP!\n");
     #define initializeNeuronLayerObject(location, columns, rows, pointer) neuronLayer_initialize(neuronLayers+location); \
     neuronLayer_configure(neuronLayers+location, columns, rows); \
     neuronLayer_regularLayer_zeroOut(neuronLayers[location]); \
@@ -130,12 +149,26 @@ void neuronLayer_setupTests(void) {
             acnfl_generateApx(-1, 0), acnfl_generateApx(5, 0)
         }, 2, datasetsSingular+0);
 
-
+    // Dataset 2
+    datasets[1].dataSetType = LAYERS_DATASET_SINGULAR;
+    datasets[1].dataSet = datasetsSingular+1;
+    layers_dataSetSingular_initializeMemory(datasetsSingular+1);
+    layers_dataSetSingular_pushListOfDataPoints(
+        (acnfl_NumberObject[]) {
+            acnfl_generateApx(4, 0),
+            acnfl_generateApx(-4, 0),
+            acnfl_generateApx(14.2, 0),
+            acnfl_generateApx(-1, 0)
+    }, 4, datasetsSingular+1);
 }
 
 void neuronLayer_teardownTests(void) {
-    neuronLayer_destroy(neuronLayers+0);
+    printf("TEARING DOWN\n");
+    for (int i = 0; i < REGULARLAYER_NUMBER; i++) {
+        neuronLayer_destroy(neuronLayers +i);
+    }
     free(datasetsSingular[0].dataList);
+    free(datasetsSingular[1].dataList);
 
 }
 
@@ -165,6 +198,9 @@ void outputErrorTests_A(void) {
     ACNFL_testing_equal(neuronLayers[4].outputVector_pointer[2],acnfl_generateApx(14, 0));
     ACNFL_testing_equal(neuronLayers[4].outputVector_pointer[3],acnfl_generateApx(-1, 0));
 
+
+    neuronLayer_backpropogateNetwork(neuronLayers, 5, datasets[1], costFunctionExample);
+    neuronLayer_updateNetwork(neuronLayers, 5, datasets[0], acnfl_generateApx(0.01, 0));
     return;
 }
 
