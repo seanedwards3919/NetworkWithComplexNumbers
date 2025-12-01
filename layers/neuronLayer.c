@@ -471,7 +471,6 @@ int neuronLayer_changeInWeights(neuronLayer_RegularLayer main, neuronLayer_Regul
         return -1;
     if (depositMaximum<1)
         return 2;
-    return 0; 
 
     int indexCount = 0;
     if (main.weightMatrix_columns != back.OUTPUTVECTOR_LENGTH)
