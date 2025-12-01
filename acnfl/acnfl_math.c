@@ -456,9 +456,12 @@ float acnfl_defaultComparison(acnfl_NumberObject a, acnfl_NumberObject b,
                 printf("Proceed with 'o'");
             #endif
 
-               a_com = ((a.imaginaryNumberValue_apx)*(a.imaginaryNumberValue_apx))+((a.realNumberValue_apx)*(a.realNumberValue_apx));
+               a_com = ((a.imaginaryNumberValue_apx)*(a.imaginaryNumberValue_apx)*(a.imaginaryNumberValue_apx < 0 ? -1 : 1))
+                    +
+                ((a.realNumberValue_apx)*(a.realNumberValue_apx)*(a.realNumberValue_apx < 0 ? -1 : 1));
                 
-               b_com = ((b.imaginaryNumberValue_apx)*(b.imaginaryNumberValue_apx))+((b.realNumberValue_apx)*(b.realNumberValue_apx));
+               b_com = ((b.imaginaryNumberValue_apx)*(b.imaginaryNumberValue_apx)*(b.imaginaryNumberValue_apx < 0 ? -1 : 1))+((b.realNumberValue_apx)*(b.realNumberValue_apx)*((b.realNumberValue_apx < 0 ? -1 : 1)));
+
                 
 
             } else if(parameter.opType == 'i') {
