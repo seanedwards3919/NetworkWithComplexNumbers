@@ -477,7 +477,7 @@ float acnfl_defaultComparison(acnfl_NumberObject a, acnfl_NumberObject b,
 
     
             } else /*parameter.opType == 'd' or other*/ {
-               #ifdef REPORTING_2
+               #ifdef REPORTING_1
                 printf("Passed parameter is %c\n"
                         , parameter.opType);
                 printf("Proceed with 'o'");
