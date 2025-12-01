@@ -38,7 +38,7 @@
  *
  * ---- WEIGHTED INPUT PARAMETERS
  * @param weightedInput_pointer
- * Pointer to a vector of bias values. upon initialization and deinitalization this pointer should be null. For an m-length vector, this is implimented as a pointer into a dynamically allocated array of m acnfl_NumberObjects
+ * Pointer to a vector of weighted input values. upon initialization and deinitalization this pointer should be null. For an m-length vector, this is implimented as a pointer into a dynamically allocated array of m acnfl_NumberObjects
  *
  * ---- OUTPUT VECTOR PARAMETERS
  * @param outputVector_pointer
