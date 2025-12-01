@@ -1,1 +1,1 @@
-add_library(acnfl_layers datasetTypes.c neuronLayer.c)
+add_library(acnfl_layers STATIC datasetTypes.c neuronLayer.c)

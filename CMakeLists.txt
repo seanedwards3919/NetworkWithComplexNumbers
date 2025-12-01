@@ -28,21 +28,22 @@ if(MATH_LIBRARY)
   target_link_libraries(ANNImp PUBLIC ${MATH_LIBRARY})
 endif()
 
+
 # Set up Lua script (Not Lua itself)
 add_subdirectory(luaInterpret)
-target_link_libraries(ANNImp PUBLIC luaInterpret)
+target_link_libraries(ANNImp PRIVATE luaInterpret)
 
 # Set up acnfl_math 
 add_subdirectory(acnfl)
-target_link_libraries(ANNImp PUBLIC acnfl_math)
+target_link_libraries(ANNImp PRIVATE acnfl_math)
 
 # Set up tests 
 add_subdirectory(tests)
-target_link_libraries(ANNImp PUBLIC tests)
+target_link_libraries(ANNImp PRIVATE tests)
 
 #set up layers 
 add_subdirectory(layers)
-target_link_libraries(ANNImp PUBLIC acnfl_layers)
+target_link_libraries(ANNImp PRIVATE acnfl_layers)
 
 # Set up CUnit  (Only on linux.)
 find_library(CUNIT_Library 

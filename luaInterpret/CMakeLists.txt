@@ -1,1 +1,1 @@
-add_library(luaInterpret luaInterfaceHead.c)
+add_library(luaInterpret STATIC luaInterfaceHead.c)
