@@ -346,7 +346,7 @@ int layers_feedForwardNetwork(
                     // d_i ← f(a_i)
                     acnfl_GenericFunctionResult activationfunction_derivative = acnfl_derivative_default(
                         combinedList + index,
-                        1, 1,  
+                        1, 0,  
                         outputLayer.activationFunction_pointer
                     ); /**  TODO: Change  to general acnfl_derivative function and add ways to adjust parameters globally.*/
                     // r_i = derivative of activation function by paramteter index
