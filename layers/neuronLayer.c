@@ -513,7 +513,7 @@ int neuronLayer_changeInBiases(neuronLayer_RegularLayer main, acnfl_NumberObject
 
     int indexCount = 0; 
     for (int elementIndex = 0; elementIndex < main.ERRORVECTOR_LENGTH; elementIndex++ ) {
-        deposit[elementIndex] = acnfl_add(main.biasVector_pointer[elementIndex], main.biasVector_pointer[elementIndex]);
+        deposit[elementIndex] = acnfl_add(main.biasVector_pointer[elementIndex], main.errorVector_pointer[elementIndex]);
         deposit[elementIndex] = acnfl_multiply(acnfl_divide(learningRate, acnfl_generateApx(main.ERRORVECTOR_LENGTH, 0)),deposit[elementIndex]);
         indexCount ++;
         if (indexCount>=depositMaximum)
