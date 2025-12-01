@@ -462,7 +462,7 @@ acnfl_NumberObject* neuronLayer_calculateHiddenError(neuronLayer_RegularLayer be
  * variable. If it terminates before all values for new weight matrix have been 
  * written, returns 3.
  */
-int neuronLayer_changeInWeights(neuronLayer_RegularLayer main, neuronLayer_RegularLayer back, acnfl_NumberObject *deposit, int depositMaximum) 
+int neuronLayer_changeInWeights(neuronLayer_RegularLayer main, neuronLayer_RegularLayer back, acnfl_NumberObject *deposit, int depositMaximum, acnfl_NumberObject learningRate) 
 {
     // Deposit  weights into deposit according to error times activation
     if (!deposit) 
@@ -485,6 +485,7 @@ int neuronLayer_changeInWeights(neuronLayer_RegularLayer main, neuronLayer_Regul
             neuronLayer_matrix_elementSelect(difference, main.weightMatrix_columns, currentRow, currentColumn) = acnfl_multiply(back.outputVector_pointer[currentRow], main.errorVector_pointer[currentRow]);
             neuronLayer_matrix_elementSelect(newValue, main.weightMatrix_columns, currentRow, currentColumn) = acnfl_add(neuronLayer_matrix_elementSelect(difference, main.weightMatrix_columns, currentRow, currentColumn), neuronLayer_matrix_elementSelect(main.weightMatrix_pointer, main.weightMatrix_columns, currentRow, currentColumn));
             neuronLayer_matrix_elementSelect(deposit, main.weightMatrix_columns, currentRow, currentColumn) = neuronLayer_matrix_elementSelect(newValue, main.weightMatrix_columns, currentRow, currentColumn);
+            neuronLayer_matrix_elementSelect(deposit, main.weightMatrix_columns, currentRow, currentColumn) =  acnfl_multiply(acnfl_divide(learningRate, acnfl_generateApx(main.ERRORVECTOR_LENGTH, 0)),neuronLayer_matrix_elementSelect(deposit, main.weightMatrix_columns, currentRow, currentColumn));
             indexCount++;
             if (indexCount >= depositMaximum)
                 return 3;
@@ -504,7 +505,7 @@ int neuronLayer_changeInWeights(neuronLayer_RegularLayer main, neuronLayer_Regul
  * variable. If it terminates before all values for new weight matrix have been 
  * written, returns 3.
  **/
-int neuronLayer_changeInBiases(neuronLayer_RegularLayer main, acnfl_NumberObject *deposit, int depositMaximum){
+int neuronLayer_changeInBiases(neuronLayer_RegularLayer main, acnfl_NumberObject *deposit, int depositMaximum, acnfl_NumberObject learningRate){
     if (!deposit) 
         return 1;
     if (!main.biasVector_pointer) 
@@ -515,6 +516,7 @@ int neuronLayer_changeInBiases(neuronLayer_RegularLayer main, acnfl_NumberObject
     int indexCount = 0; 
     for (int elementIndex = 0; elementIndex < main.ERRORVECTOR_LENGTH; elementIndex++ ) {
         deposit[elementIndex] = acnfl_add(main.biasVector_pointer[elementIndex], main.biasVector_pointer[elementIndex]);
+        deposit[elementIndex] = acnfl_multiply(acnfl_divide(learningRate, acnfl_generateApx(main.ERRORVECTOR_LENGTH, 0)),deposit[elementIndex]);
         indexCount ++;
         if (indexCount>=depositMaximum)
             return 3;
@@ -630,7 +632,8 @@ int neuronLayer_updateNetwork(
     neuronLayer_RegularLayer *network,
     long long int networkLayersLength,
 
-    layers_DataSetObject inputdata
+    layers_DataSetObject inputdata,
+    acnfl_NumberObject learningRate
 ) {
 
     int returnValue = 0;
@@ -648,7 +651,7 @@ int neuronLayer_updateNetwork(
         #ifdef REPORTING_2
         int result=
         #endif
-        neuronLayer_changeInWeights(network[index], network[index-1], buffer_a, network[index].weightMatrix_rows*network[index].weightMatrix_columns);
+        neuronLayer_changeInWeights(network[index], network[index-1], buffer_a, network[index].weightMatrix_rows*network[index].weightMatrix_columns, learningRate);
         #ifdef REPORTING_2
         if (result!=0)
             printf("Result of changeInWeights was %d on index %d", result, index);
@@ -657,7 +660,7 @@ int neuronLayer_updateNetwork(
         #ifdef REPORTING_2
         result =
         #endif
-        neuronLayer_changeInBiases(network[index], buffer_b, network[index].BIASVECTOR_LENGTH); 
+        neuronLayer_changeInBiases(network[index], buffer_b, network[index].BIASVECTOR_LENGTH, learningRate); 
         #ifdef REPORTING_2
         if (result!=0)
             printf("Result of changeInBiases was %d on index %d", result, index);
@@ -702,7 +705,7 @@ int neuronLayer_updateNetwork(
         #ifdef REPORTING_2
         int result=
         #endif
-        neuronLayer_changeInWeights(network[0], mockLayer, buffer_a, network[0].weightMatrix_rows*network[0].weightMatrix_columns);
+        neuronLayer_changeInWeights(network[0], mockLayer, buffer_a, network[0].weightMatrix_rows*network[0].weightMatrix_columns, learningRate);
         #ifdef REPORTING_2
         if (result!=0)
             printf("Result of changeInWeights was %d on index %d", result, 0);
@@ -711,7 +714,7 @@ int neuronLayer_updateNetwork(
         #ifdef REPORTING_2
         result =
         #endif
-        neuronLayer_changeInBiases(network[0], buffer_b, network[0].BIASVECTOR_LENGTH); 
+        neuronLayer_changeInBiases(network[0], buffer_b, network[0].BIASVECTOR_LENGTH, learningRate); 
         #ifdef REPORTING_2
         if (result!=0)
             printf("Result of changeInBiases was %d on index %d", result, 0);
