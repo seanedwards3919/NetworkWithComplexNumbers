@@ -330,12 +330,12 @@ int layers_feedForwardNetwork(
                 for (;
                      index < outputLayer.WEIGHTEDINPUT_LENGTH;
                      index++) {
-                        combinedList[index]=outputLayer.weightedInput_pointer[index];
+                        combinedList[index]=outputLayer.outputVector_pointer[index];
                 }
                 for (long long loopIndex =0; 
                      loopIndex < (outputLayer.OUTPUTVECTOR_LENGTH);
                      loopIndex++, index++){
-                    combinedList[index]=outputLayer.outputVector_pointer[loopIndex];
+                    combinedList[index]=intendedResultAsSingular->dataList[loopIndex];
                  }
 
 
