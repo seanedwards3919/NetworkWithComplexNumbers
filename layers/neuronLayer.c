@@ -479,7 +479,7 @@ int neuronLayer_changeInWeights(neuronLayer_RegularLayer main, neuronLayer_Regul
         difference[main.weightMatrix_rows *main.weightMatrix_columns];
 
     for (int currentRow = 0; currentRow < main.weightMatrix_rows; currentRow ++) {
-        for (int currentColumn = 0; currentColumn < main.weightMatrix_columns; currentColumn++) {
+        for (int currentColumn = 0; currentColumn < main.weightMatrix_columns; currentColumn++) {            
             if (indexCount >= depositMaximum)
                 return 3;
  
@@ -488,7 +488,7 @@ int neuronLayer_changeInWeights(neuronLayer_RegularLayer main, neuronLayer_Regul
             neuronLayer_matrix_elementSelect(deposit, main.weightMatrix_columns, currentRow, currentColumn) = neuronLayer_matrix_elementSelect(newValue, main.weightMatrix_columns, currentRow, currentColumn);
             neuronLayer_matrix_elementSelect(deposit, main.weightMatrix_columns, currentRow, currentColumn) =  acnfl_multiply(acnfl_divide(learningRate, acnfl_generateApx(main.ERRORVECTOR_LENGTH, 0)),neuronLayer_matrix_elementSelect(deposit, main.weightMatrix_columns, currentRow, currentColumn));
             indexCount++;
-        }
+       }
     }
     return 0;
 }
@@ -520,7 +520,7 @@ int neuronLayer_changeInBiases(neuronLayer_RegularLayer main, acnfl_NumberObject
         deposit[elementIndex] = acnfl_add(main.biasVector_pointer[elementIndex], main.errorVector_pointer[elementIndex]);
         deposit[elementIndex] = acnfl_multiply(acnfl_divide(learningRate, acnfl_generateApx(main.ERRORVECTOR_LENGTH, 0)),deposit[elementIndex]);
         indexCount ++;
-    }
+   }
     return 0;
 } 
 /**

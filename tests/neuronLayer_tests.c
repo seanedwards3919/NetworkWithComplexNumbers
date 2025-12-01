@@ -200,7 +200,7 @@ void outputErrorTests_A(void) {
 
 
     neuronLayer_backpropogateNetwork(neuronLayers, 5, datasets[1], costFunctionExample);
-    neuronLayer_updateNetwork(neuronLayers, 5, datasets[0], acnfl_generateApx(0.01, 0));
+    neuronLayer_updateNetwork(neuronLayers, 5, datasets[0], acnfl_generateApx(0.001, 0));
     return;
 }
 
